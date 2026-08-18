@@ -1,9 +1,11 @@
+import { Button } from "@/components/ui/button"
+
 function App() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-black text-white">
-      <h1 className="text-5xl font-bold">
-        Repoverse 🌌
-      </h1>
+    <main className="flex min-h-screen items-center justify-center bg-black">
+      <Button>
+        Explore Repoverse
+      </Button>
     </main>
   )
 }
