@@ -1,8 +1,20 @@
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import RepoCard from './components/3d/RepoCard'
+import { useState } from 'react'
+import RepoPanel from './components/RepoPanel'
+
+const repo = {
+  name: 'QuiQR',
+  description: 'A QR code generator built with React and TypeScript.',
+  language: 'TypeScript',
+  stars: 0,
+  forks: 0,
+}
 
 function App() {
+  const [selectedRepo, setSelectedRepo] = useState(null)
+  
   return (
     <main className="h-screen w-full bg-black">
       <Canvas camera={{ position: [0, 0, 6], fov: 50 }}>
@@ -19,10 +31,18 @@ function App() {
           distance={10}
         />
 
-        <RepoCard />
+        <RepoCard
+          repo={repo}
+          onSelect={setSelectedRepo}
+        />
 
         <OrbitControls />
-      </Canvas>      
+      </Canvas>     
+
+      <RepoPanel
+  repo={selectedRepo}
+  onClose={() => setSelectedRepo(null)}
+/> 
     </main>
   )
 }
