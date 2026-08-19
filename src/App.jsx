@@ -1,30 +1,28 @@
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
-
-function Cube() {
-  return (
-    <mesh>
-      <boxGeometry args={[2, 2, 2]} />
-      <meshStandardMaterial color="white" />
-    </mesh>
-  )
-}
+import RepoCard from './components/3d/RepoCard'
 
 function App() {
   return (
     <main className="h-screen w-full bg-black">
-      <Canvas camera={{ position: [3, 3, 5], fov: 50 }}>
-        <ambientLight intensity={1} />
+      <Canvas camera={{ position: [0, 0, 6], fov: 50 }}>
+        <ambientLight intensity={0.4} />
 
         <directionalLight
-          position={[5, 5, 5]}
+          position={[4, 5, 6]}
           intensity={2}
         />
 
-        <Cube />
+        <pointLight
+          position={[-4, -2, 3]}
+          intensity={15}
+          distance={10}
+        />
+
+        <RepoCard />
 
         <OrbitControls />
-      </Canvas>
+      </Canvas>      
     </main>
   )
 }
