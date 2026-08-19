@@ -1,36 +1,60 @@
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from './ui/card'
+
+import { Button } from './ui/button'
+
+import { Badge } from './ui/badge'
+
 function RepoPanel({ repo, onClose }) {
   if (!repo) return null
 
   return (
-    <aside className="absolute right-6 top-6 z-10 w-80 rounded-2xl border border-white/10 bg-black/70 p-6 text-white shadow-2xl backdrop-blur-xl">
-      <button
-        onClick={onClose}
-        className="absolute right-4 top-4 text-white/50 transition hover:text-white"
-      >
-        ×
-      </button>
+    <aside className="absolute right-6 top-6 z-10 w-80">
+      <Card className="border-white/10 bg-black/70 text-white shadow-2xl backdrop-blur-xl">
+        <CardHeader>
+          <div className="flex items-start justify-between">
+            <div>
+              <CardDescription className="text-white/50">
+                Repository
+              </CardDescription>
 
-      <p className="mb-2 text-sm text-white/50">
-        Repository
-      </p>
+              <CardTitle className="mt-2 text-2xl">
+                {repo.name}
+              </CardTitle>
+            </div>
 
-      <h2 className="text-2xl font-semibold">
-        {repo.name}
-      </h2>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="text-white/50 hover:bg-white/10 hover:text-white"
+            >
+              ×
+            </Button>
+          </div>
+        </CardHeader>
 
-      <p className="mt-3 text-sm leading-6 text-white/60">
-        {repo.description}
-      </p>
+        <CardContent>
+          <p className="text-sm leading-6 text-white/60">
+            {repo.description}
+          </p>
 
-      <div className="mt-5 flex gap-2">
-        <span className="rounded-full bg-white/10 px-3 py-1 text-xs">
-          {repo.language}
-        </span>
+          <div className="mt-5 flex gap-2">
+            <Badge variant="secondary">
+  {repo.language}
+</Badge>
 
-        <span className="rounded-full bg-white/10 px-3 py-1 text-xs">
-          ⭐ {repo.stars}
-        </span>
-      </div>
+<Badge variant="secondary">
+  ⭐ {repo.stars}
+</Badge>
+          </div>
+        </CardContent>
+      </Card>
     </aside>
   )
 }
