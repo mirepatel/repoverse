@@ -1,17 +1,10 @@
+import { useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import RepoCard from "./components/3d/RepoCard";
-import { useState } from "react";
-import RepoPanel from "./components/RepoPanel";
 
-const repo = {
-  name: "QuiQR",
-  description: "A QR code generator built with React and TypeScript.",
-  language: "TypeScript",
-  stars: 0,
-  forks: 0,
-  githubUrl: "https://github.com/mirepatel/QuiQR",
-};
+import RepoCard from "./components/3d/RepoCard";
+import RepoPanel from "./components/RepoPanel";
+import repositories from "./data/repositories";
 
 function App() {
   const [selectedRepo, setSelectedRepo] = useState(null);
@@ -25,7 +18,14 @@ function App() {
 
         <pointLight position={[-4, -2, 3]} intensity={15} distance={10} />
 
-        <RepoCard repo={repo} onSelect={setSelectedRepo} />
+        {repositories.map((repo) => (
+          <RepoCard
+            key={repo.id}
+            repo={repo}
+            onSelect={setSelectedRepo}
+            selected={selectedRepo?.id === repo.id}
+          />
+        ))}
 
         <OrbitControls />
       </Canvas>

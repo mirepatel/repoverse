@@ -1,20 +1,17 @@
 import { useState } from "react";
 import { Float, Text } from "@react-three/drei";
 
-function RepoCard({ repo, onSelect }) {
+function RepoCard({ repo, onSelect, selected }) {
   const [hovered, setHovered] = useState(false);
-  const [selected, setSelected] = useState(false);
 
   return (
     <Float speed={2} rotationIntensity={0.15} floatIntensity={0.3}>
       <mesh
+        position={repo.position}
         scale={selected ? 1.08 : hovered ? 1.05 : 1}
         onPointerOver={() => setHovered(true)}
         onPointerOut={() => setHovered(false)}
-        onClick={() => {
-          setSelected(!selected);
-          onSelect(repo);
-        }}
+        onClick={() => onSelect(repo)}
       >
         <boxGeometry args={[3.5, 2.2, 0.3]} />
 
