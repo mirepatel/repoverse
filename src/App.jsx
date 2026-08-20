@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, Stars } from "@react-three/drei";
 
 import RepoCard from "./components/3d/RepoCard";
 import RepoPanel from "./components/RepoPanel";
@@ -12,6 +12,23 @@ function App() {
   return (
     <main className="h-screen w-full bg-black">
       <Canvas camera={{ position: [0, 0, 6], fov: 50 }}>
+        <ambientLight intensity={0.4} />
+
+        <directionalLight
+  position={[5, 5, 5]}
+  intensity={1.5}
+/>
+
+        <Stars
+          radius={50}
+          depth={30}
+          count={2000}
+          factor={2}
+          saturation={0}
+          fade
+          speed={0.5}
+        />
+
         <ambientLight intensity={0.4} />
 
         <directionalLight position={[4, 5, 6]} intensity={2} />

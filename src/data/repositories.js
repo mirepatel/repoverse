@@ -7,7 +7,7 @@ const repositories = [
     stars: 0,
     forks: 0,
     githubUrl: 'https://github.com/mirepatel/QuiQR',
-    position: [-2.2, 0.6, 0],
+    position: [-2.5, 0.8, 0],
   },
 
   {
@@ -18,7 +18,7 @@ const repositories = [
     stars: 0,
     forks: 0,
     githubUrl: 'https://github.com/mirepatel/NetSpeee',
-    position: [2.2, 0.8, -0.5],
+    position: [2.4, 1.1, -2],
   },
 
   {
@@ -29,7 +29,7 @@ const repositories = [
     stars: 0,
     forks: 0,
     githubUrl: 'https://github.com/mirepatel/GiphyGIFer',
-    position: [0, -1.5, -1],
+    position: [0, -1.5, -4],
   },
 ]
 
