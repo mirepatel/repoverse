@@ -11,7 +11,7 @@ function App() {
 
   return (
     <main className="h-screen w-full bg-black">
-      <Canvas camera={{ position: [0, 0, 6], fov: 50 }}>
+      <Canvas>
         <ambientLight intensity={0.4} />
 
         <directionalLight position={[5, 5, 5]} intensity={1.5} />
@@ -26,23 +26,25 @@ function App() {
           speed={0.5}
         />
 
-        <ambientLight intensity={0.4} />
-
-        <directionalLight position={[4, 5, 6]} intensity={2} />
-
-        <pointLight position={[-4, -2, 3]} intensity={15} distance={10} />
-
         {repositories.map((repo) => (
           <RepoCard
             key={repo.id}
             repo={repo}
-            onSelect={setSelectedRepo}
+            onSelect={(repo) =>
+              setSelectedRepo(selectedRepo?.id === repo.id ? null : repo)
+            }
             selected={selectedRepo?.id === repo.id}
             dimmed={selectedRepo !== null && selectedRepo.id !== repo.id}
           />
         ))}
 
-        <OrbitControls />
+        <OrbitControls
+          enableDamping
+          dampingFactor={0.08}
+          enablePan
+          minDistance={4}
+          maxDistance={18}
+        />
       </Canvas>
 
       <RepoPanel repo={selectedRepo} onClose={() => setSelectedRepo(null)} />
