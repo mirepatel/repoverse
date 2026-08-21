@@ -14,10 +14,7 @@ function App() {
       <Canvas camera={{ position: [0, 0, 6], fov: 50 }}>
         <ambientLight intensity={0.4} />
 
-        <directionalLight
-  position={[5, 5, 5]}
-  intensity={1.5}
-/>
+        <directionalLight position={[5, 5, 5]} intensity={1.5} />
 
         <Stars
           radius={50}
@@ -41,6 +38,7 @@ function App() {
             repo={repo}
             onSelect={setSelectedRepo}
             selected={selectedRepo?.id === repo.id}
+            dimmed={selectedRepo !== null && selectedRepo.id !== repo.id}
           />
         ))}
 
