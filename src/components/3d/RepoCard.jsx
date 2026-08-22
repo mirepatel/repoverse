@@ -1,23 +1,47 @@
 import { useState } from "react";
 import { Float, Html, RoundedBox } from "@react-three/drei";
-import { ArrowUpRight, Code2, GitFork, Star } from "lucide-react";
+import {
+  ArrowUpRight,
+  Code2,
+  GitFork,
+  Star,
+} from "lucide-react";
 
-function RepoCard({ repo, onSelect, selected, dimmed }) {
+function RepoCard({
+  repo,
+  onSelect,
+  selected,
+  dimmed,
+  searchMatched = true,
+}) {
   const [hovered, setHovered] = useState(false);
 
   const isFeatured = Boolean(repo.featured);
 
-  const scale = selected ? 1.03 : hovered ? 1.015 : 1;
+  const isSearchDimmed = !searchMatched;
+
+  const scale = selected
+    ? 1.03
+    : hovered && searchMatched
+      ? 1.015
+      : 1;
 
   return (
-    <Float speed={1.1} rotationIntensity={0.015} floatIntensity={0.08}>
+    <Float
+      speed={1.1}
+      rotationIntensity={0.015}
+      floatIntensity={0.08}
+    >
       <group
         position={repo.position}
         rotation={repo.rotation || [0, 0, 0]}
         scale={scale}
       >
-        {/* Thin 3D glass body */}
-        <RoundedBox args={[3.8, 2.35, 0.12]} radius={0.16} smoothness={6}>
+        <RoundedBox
+          args={[3.8, 2.35, 0.12]}
+          radius={0.16}
+          smoothness={6}
+        >
           <meshPhysicalMaterial
             color={selected ? "#1b1b2a" : "#101017"}
             roughness={0.28}
@@ -25,11 +49,16 @@ function RepoCard({ repo, onSelect, selected, dimmed }) {
             clearcoat={0.8}
             clearcoatRoughness={0.2}
             transparent
-            opacity={dimmed ? 0.42 : 0.92}
+            opacity={
+              isSearchDimmed
+                ? 0.12
+                : dimmed
+                  ? 0.35
+                  : 0.92
+            }
           />
         </RoundedBox>
 
-        {/* UI layer */}
         <Html
           center
           transform
@@ -38,8 +67,14 @@ function RepoCard({ repo, onSelect, selected, dimmed }) {
           occlude={false}
           style={{
             transition: "opacity 250ms ease",
-            opacity: dimmed ? 0.38 : 1,
-            pointerEvents: "auto",
+            opacity: isSearchDimmed
+              ? 0.08
+              : dimmed
+                ? 0.38
+                : 1,
+            pointerEvents: isSearchDimmed
+              ? "none"
+              : "auto",
           }}
         >
           <div className="w-[360px]">
@@ -62,7 +97,6 @@ function RepoCard({ repo, onSelect, selected, dimmed }) {
                 }
               `}
             >
-              {/* Subtle ambient glow */}
               <div
                 className={`
                   pointer-events-none absolute inset-0
@@ -73,7 +107,6 @@ function RepoCard({ repo, onSelect, selected, dimmed }) {
               />
 
               <div className="relative p-5">
-                {/* Header */}
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex min-w-0 items-center gap-3">
                     <div
@@ -108,15 +141,12 @@ function RepoCard({ repo, onSelect, selected, dimmed }) {
                   )}
                 </div>
 
-                {/* Description */}
                 <p className="mt-5 min-h-[48px] text-[13px] leading-[1.65] text-white/45">
                   {repo.description}
                 </p>
 
-                {/* Divider */}
                 <div className="my-4 h-px bg-white/[0.07]" />
 
-                {/* Footer */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[10px] text-white/50">
