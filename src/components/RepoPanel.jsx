@@ -1,15 +1,4 @@
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
-
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-
-import {
-  ArrowUpRight,
   Code2,
   ExternalLink,
   GitFork,
@@ -17,103 +6,112 @@ import {
   X,
 } from "lucide-react";
 
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from "./ui/card";
+import { Separator } from "./ui/separator";
+
 function RepoPanel({ repo, onClose }) {
   if (!repo) return null;
 
   return (
-    <aside
-      className="
-        absolute right-6 top-20 z-30
-        w-[380px] max-w-[calc(100vw-3rem)]
-        animate-in fade-in slide-in-from-right-4
-        duration-300
-      "
-    >
-      <Card className="overflow-hidden border-white/10 bg-[#09090e]/90 text-white shadow-[0_24px_100px_rgba(0,0,0,0.55)] backdrop-blur-2xl">
-        {/* Accent */}
-        <div className="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+    <aside className="absolute right-5 top-20 z-30 w-[min(380px,calc(100%-40px))] md:right-7 md:top-24">
+      <Card className="overflow-hidden border-white/10 bg-[#0a0a0d]/90 text-white shadow-2xl shadow-black/50 backdrop-blur-2xl">
+        <CardHeader className="p-5 pb-4">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <p className="mb-2 text-[9px] font-semibold uppercase tracking-[0.25em] text-white/30">
+                Repository
+              </p>
 
-        <CardHeader className="pb-4">
-          <div className="flex items-start justify-between gap-5">
-            <div className="flex min-w-0 items-start gap-3">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
-                <Code2 className="size-[18px] text-white/60" />
-              </div>
-
-              <div className="min-w-0">
-                <p className="text-[9px] font-medium uppercase tracking-[0.2em] text-white/30">
-                  Repository
-                </p>
-
-                <CardTitle className="mt-1 truncate text-xl tracking-tight">
-                  {repo.name}
-                </CardTitle>
-              </div>
+              <h2 className="truncate text-xl font-semibold tracking-tight">
+                {repo.name}
+              </h2>
             </div>
 
             <Button
+              type="button"
               variant="ghost"
               size="icon"
               onClick={onClose}
-              aria-label="Close repository details"
-              className="size-8 shrink-0 rounded-full text-white/30 hover:bg-white/10 hover:text-white"
+              className="h-8 w-8 shrink-0 rounded-full text-white/30 hover:bg-white/10 hover:text-white"
+              aria-label="Close repository"
             >
-              <X className="size-4" />
+              <X className="h-4 w-4" />
             </Button>
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-6">
-          {/* Description */}
-          <p className="text-[13px] leading-6 text-white/50">
+        <CardContent className="space-y-5 px-5 pb-5">
+          <p className="text-sm leading-6 text-white/50">
             {repo.description}
           </p>
 
-          {/* Metadata */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap gap-2">
             <Badge
               variant="secondary"
-              className="border-white/10 bg-white/[0.06] text-white/60"
+              className="border border-white/10 bg-white/[0.05] text-white/70"
             >
-              {repo.language}
+              <Code2 className="mr-1.5 h-3 w-3" />
+              {repo.language || "Unknown"}
             </Badge>
 
-            <div className="flex items-center gap-1.5 text-[11px] text-white/35">
-              <Star className="size-3" />
-              {repo.stars}
-            </div>
+            <Badge
+              variant="secondary"
+              className="border border-white/10 bg-white/[0.05] text-white/70"
+            >
+              <Star className="mr-1.5 h-3 w-3" />
+              {repo.stars ?? 0}
+            </Badge>
 
-            <div className="flex items-center gap-1.5 text-[11px] text-white/35">
-              <GitFork className="size-3" />
-              {repo.forks}
-            </div>
+            <Badge
+              variant="secondary"
+              className="border border-white/10 bg-white/[0.05] text-white/70"
+            >
+              <GitFork className="mr-1.5 h-3 w-3" />
+              {repo.forks ?? 0}
+            </Badge>
           </div>
 
-          {/* Divider */}
-          <div className="h-px bg-white/[0.07]" />
+          {repo.topics?.length > 0 && (
+            <>
+              <Separator className="bg-white/10" />
 
-          {/* Repository action */}
+              <div>
+                <p className="mb-2 text-[9px] font-semibold uppercase tracking-[0.2em] text-white/25">
+                  Topics
+                </p>
+
+                <div className="flex flex-wrap gap-1.5">
+                  {repo.topics.map((topic) => (
+                    <span
+                      key={topic}
+                      className="rounded-md border border-white/10 bg-white/[0.035] px-2 py-1 text-[10px] text-white/45"
+                    >
+                      {topic}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+
           <Button
-            className="
-              h-10 w-full justify-between
-              rounded-xl
-              bg-white text-black
-              hover:bg-white/90
-            "
-            onClick={() =>
-              window.open(
-                repo.githubUrl,
-                "_blank",
-                "noopener,noreferrer"
-              )
-            }
+            asChild
+            className="h-10 w-full rounded-lg bg-white text-black hover:bg-white/90"
           >
-            <span className="flex items-center gap-2">
+            <a
+              href={repo.githubUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
               View on GitHub
-              <ArrowUpRight className="size-3.5" />
-            </span>
-
-            <ExternalLink className="size-3.5 opacity-40" />
+              <ExternalLink className="ml-2 h-3.5 w-3.5" />
+            </a>
           </Button>
         </CardContent>
       </Card>
