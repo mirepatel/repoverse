@@ -2,6 +2,8 @@ import { Html } from "@react-three/drei";
 import { useMemo, useState } from "react";
 import { Code2, Star } from "lucide-react";
 
+import { getRepositoryVisuals } from "../../lib/repositoryVisuals";
+
 function RepositoryNode({
   repo,
   index,
@@ -10,31 +12,47 @@ function RepositoryNode({
 }) {
   const [hovered, setHovered] = useState(false);
 
+  const visual = useMemo(
+    () => getRepositoryVisuals(repo, index),
+    [repo, index]
+  );
+
   const position = useMemo(() => {
-    if (repo.id === "repoverse") {
-      return [0, 0, 0];
-    }
+    /*
+     * Golden-angle distribution.
+     *
+     * This gives us a natural-looking spread without
+     * manually positioning every repository.
+     */
+    const goldenAngle = Math.PI * (3 - Math.sqrt(5));
 
-    const angle = index * 1.65;
-    const ring = Math.floor(index / 6);
+    const angle = index * goldenAngle;
 
-    const radius = 3.1 + ring * 1.7;
+    const verticalSpread =
+      Math.sin(index * 1.37) * 1.8;
 
     return [
-      Math.cos(angle) * radius,
-      Math.sin(index * 0.9) * 1.4,
-      Math.sin(angle) * radius,
+      Math.cos(angle) * visual.orbitRadius,
+      verticalSpread,
+      Math.sin(angle) * visual.orbitRadius,
     ];
-  }, [repo.id, index]);
+  }, [index, visual.orbitRadius]);
 
-  const isFeatured = repo.featured;
+  const scale = selected
+    ? 1.28
+    : hovered
+      ? 1.12
+      : 1;
 
-  const size = isFeatured ? 0.48 : 0.32;
+  const opacity = visual.archived
+    ? 0.35
+    : 1;
 
   return (
     <group position={position}>
-      {/* Outer glow */}
+      {/* Atmospheric glow */}
       <mesh
+        scale={scale}
         onClick={(event) => {
           event.stopPropagation();
           onSelect(repo);
@@ -48,20 +66,28 @@ function RepositoryNode({
           setHovered(false);
           document.body.style.cursor = "default";
         }}
-        scale={selected ? 1.28 : hovered ? 1.14 : 1}
       >
-        <sphereGeometry args={[size * 1.45, 32, 32]} />
+        <sphereGeometry
+          args={[visual.size * 1.8, 32, 32]}
+        />
 
         <meshBasicMaterial
-          color={isFeatured ? "#8b7cff" : "#6f6a9c"}
+          color={visual.glow}
           transparent
-          opacity={selected ? 0.13 : hovered ? 0.09 : 0.045}
+          opacity={
+            selected
+              ? 0.12
+              : hovered
+                ? 0.07
+                : 0.025
+          }
           depthWrite={false}
         />
       </mesh>
 
-      {/* Main planet */}
+      {/* Planet */}
       <mesh
+        scale={scale}
         onClick={(event) => {
           event.stopPropagation();
           onSelect(repo);
@@ -75,63 +101,108 @@ function RepositoryNode({
           setHovered(false);
           document.body.style.cursor = "default";
         }}
-        scale={selected ? 1.28 : hovered ? 1.14 : 1}
       >
-        <sphereGeometry args={[size, 32, 32]} />
+        <sphereGeometry
+          args={[
+            visual.size,
+            32,
+            32,
+          ]}
+        />
 
         <meshStandardMaterial
-          color={selected ? "#7568ff" : isFeatured ? "#5145b8" : "#292740"}
-          emissive={selected ? "#766aff" : "#312a72"}
-          emissiveIntensity={selected ? 1.4 : isFeatured ? 0.7 : 0.28}
-          roughness={0.32}
-          metalness={0.5}
+          color={visual.color}
+          emissive={visual.glow}
+          emissiveIntensity={
+            selected
+              ? 1.5
+              : 0.35 + visual.activity * 0.45
+          }
+          roughness={0.38}
+          metalness={0.3}
+          transparent
+          opacity={opacity}
         />
       </mesh>
 
-      {/* Selection ring */}
-      {selected && (
+      {/* Activity ring */}
+      {visual.activity > 0.65 && (
         <mesh rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[size * 1.7, 0.012, 12, 64]} />
+          <torusGeometry
+            args={[
+              visual.size * 1.45,
+              0.008 + visual.activity * 0.012,
+              12,
+              64,
+            ]}
+          />
 
           <meshBasicMaterial
-            color="#958bff"
+            color={visual.glow}
+            transparent
+            opacity={
+              selected
+                ? 0.85
+                : hovered
+                  ? 0.5
+                  : 0.18
+            }
+          />
+        </mesh>
+      )}
+
+      {/* Selected state */}
+      {selected && (
+        <mesh rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry
+            args={[
+              visual.size * 1.75,
+              0.018,
+              16,
+              64,
+            ]}
+          />
+
+          <meshBasicMaterial
+            color="#ffffff"
             transparent
             opacity={0.75}
           />
         </mesh>
       )}
 
-      {/* Repository label */}
-      {(hovered || selected || isFeatured) && (
+      {/* Label */}
+      {(hovered || selected) && (
         <Html
           center
           distanceFactor={8}
-          position={[0, size + 0.35, 0]}
+          position={[
+            0,
+            visual.size + 0.35,
+            0,
+          ]}
           style={{
             pointerEvents: "none",
             userSelect: "none",
           }}
         >
-          <div
-            className={[
-              "whitespace-nowrap rounded-full border px-3 py-1.5",
-              "bg-black/60 backdrop-blur-xl",
-              "shadow-2xl transition-all",
-              selected
-                ? "border-white/20 text-white"
-                : "border-white/10 text-white/65",
-            ].join(" ")}
-          >
+          <div className="whitespace-nowrap rounded-full border border-white/10 bg-black/65 px-3 py-1.5 text-white/80 shadow-2xl backdrop-blur-xl">
             <div className="flex items-center gap-2">
-              {isFeatured ? (
-                <Star className="h-3 w-3 fill-current text-white/80" />
+              {repo.stars > 0 ? (
+                <Star className="h-3 w-3 fill-current text-white/60" />
               ) : (
-                <Code2 className="h-3 w-3 text-white/40" />
+                <Code2 className="h-3 w-3 text-white/35" />
               )}
 
-              <span className="text-[11px] font-medium tracking-tight">
+              <span className="text-[11px] font-medium">
                 {repo.name}
               </span>
+
+              {repo.language && (
+                <span className="text-[9px] text-white/30">
+                  {repo.language}
+                </span>
+              )}
             </div>
           </div>
         </Html>

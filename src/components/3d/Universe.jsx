@@ -25,7 +25,6 @@ function Universe({ repositories, selectedRepo, onSelect }) {
 
         <fog attach="fog" args={["#030305", 14, 30]} />
 
-        {/* Ambient illumination */}
         <ambientLight intensity={0.18} />
 
         <pointLight
@@ -40,7 +39,6 @@ function Universe({ repositories, selectedRepo, onSelect }) {
           distance={18}
         />
 
-        {/* Deep space */}
         <Stars
           radius={70}
           depth={45}
@@ -51,37 +49,25 @@ function Universe({ repositories, selectedRepo, onSelect }) {
           speed={0.25}
         />
 
-        {/* Central system */}
+        {/* Central light source */}
         <Float
           speed={0.7}
           rotationIntensity={0.05}
           floatIntensity={0.12}
         >
           <mesh>
-            <sphereGeometry args={[0.72, 48, 48]} />
+            <sphereGeometry args={[0.45, 32, 32]} />
 
             <meshStandardMaterial
-              color="#151526"
-              emissive="#4c3cff"
-              emissiveIntensity={0.8}
-              roughness={0.28}
+              color="#332b68"
+              emissive="#6757ff"
+              emissiveIntensity={1.2}
+              roughness={0.35}
               metalness={0.45}
-            />
-          </mesh>
-
-          <mesh>
-            <sphereGeometry args={[0.9, 32, 32]} />
-
-            <meshBasicMaterial
-              color="#6d5cff"
-              transparent
-              opacity={0.055}
-              depthWrite={false}
             />
           </mesh>
         </Float>
 
-        {/* Repository nodes */}
         {repositories.map((repo, index) => (
           <RepositoryNode
             key={repo.id}
@@ -92,7 +78,6 @@ function Universe({ repositories, selectedRepo, onSelect }) {
           />
         ))}
 
-        {/* Free camera */}
         <OrbitControls
           makeDefault
           enableDamping
