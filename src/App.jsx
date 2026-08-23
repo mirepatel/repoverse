@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
 import {
   LoaderCircle,
   Search,
@@ -10,21 +11,29 @@ import Universe from "./components/3d/Universe";
 import RepoPanel from "./components/RepoPanel";
 import ProfileHUD from "./components/ProfileHUD";
 
+function getUsernameFromPath() {
+  const path = window.location.pathname.replace(/^\/+|\/+$/g, "");
+
+  if (!path) {
+    return "";
+  }
+
+  return decodeURIComponent(path);
+}
+
 function App() {
   const [username, setUsername] = useState("");
   const [profile, setProfile] = useState(null);
   const [selectedRepo, setSelectedRepo] = useState(null);
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleExplore = async (event) => {
-    event.preventDefault();
-
-    const cleanUsername = username.trim();
+  const loadProfile = async (value) => {
+    const cleanUsername = value.trim().replace(/^@/, "");
 
     if (!cleanUsername) {
-      setError("Enter a GitHub username.");
+      setProfile(null);
+      setError("");
       return;
     }
 
@@ -36,6 +45,7 @@ function App() {
       const data = await getGitHubProfile(cleanUsername);
 
       setProfile(data);
+      setUsername(data.user.login);
     } catch (err) {
       setProfile(null);
       setError(err.message || "Something went wrong.");
@@ -44,26 +54,81 @@ function App() {
     }
   };
 
+  useEffect(() => {
+    const initialUsername = getUsernameFromPath();
+
+    if (initialUsername) {
+      setUsername(initialUsername);
+      loadProfile(initialUsername);
+    }
+
+    const handlePopState = () => {
+      const pathUsername = getUsernameFromPath();
+
+      setError("");
+      setSelectedRepo(null);
+
+      if (pathUsername) {
+        setUsername(pathUsername);
+        loadProfile(pathUsername);
+      } else {
+        setUsername("");
+        setProfile(null);
+        setLoading(false);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
+
+  const handleExplore = async (event) => {
+    event.preventDefault();
+
+    const cleanUsername = username.trim().replace(/^@/, "");
+
+    if (!cleanUsername) {
+      setError("Enter a GitHub username.");
+      return;
+    }
+
+    const nextPath = `/${encodeURIComponent(cleanUsername)}`;
+
+    window.history.pushState({}, "", nextPath);
+
+    await loadProfile(cleanUsername);
+  };
+
   const handleReset = () => {
+    window.history.pushState({}, "", "/");
+
     setProfile(null);
     setSelectedRepo(null);
+    setUsername("");
     setError("");
+    setLoading(false);
   };
 
   /*
    * LANDING EXPERIENCE
    */
+
   if (!profile) {
     return (
       <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#030305] px-6 text-white">
         {/* Background atmosphere */}
+
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600/[0.06] blur-[140px]" />
 
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#030305_75%)]" />
         </div>
 
-        {/* Small atmospheric points */}
+        {/* Atmospheric points */}
+
         <div className="pointer-events-none absolute inset-0 opacity-40">
           <div className="absolute left-[18%] top-[24%] h-1 w-1 rounded-full bg-white" />
           <div className="absolute left-[76%] top-[28%] h-1 w-1 rounded-full bg-white/60" />
@@ -72,6 +137,7 @@ function App() {
         </div>
 
         {/* Brand */}
+
         <div className="absolute left-6 top-6 flex items-center gap-3 md:left-8 md:top-8">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] backdrop-blur-xl">
             <Sparkles className="h-4 w-4" />
@@ -89,8 +155,8 @@ function App() {
         </div>
 
         {/* Main */}
+
         <section className="relative z-10 w-full max-w-xl text-center">
-          {/* GitHub-style mark without external icon dependency */}
           <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-xl font-semibold shadow-2xl shadow-violet-950/20 backdrop-blur-xl">
             GH
           </div>
@@ -102,7 +168,9 @@ function App() {
           <h1 className="text-4xl font-semibold tracking-[-0.04em] md:text-6xl">
             Your GitHub,
             <br />
-            <span className="text-white/40">reimagined.</span>
+            <span className="text-white/40">
+              reimagined.
+            </span>
           </h1>
 
           <p className="mx-auto mt-5 max-w-md text-sm leading-6 text-white/35">
@@ -162,6 +230,7 @@ function App() {
   /*
    * REPOVERSE EXPERIENCE
    */
+
   return (
     <main className="relative h-screen w-full overflow-hidden bg-[#030305] text-white">
       <Universe
@@ -173,9 +242,11 @@ function App() {
       <ProfileHUD profile={profile} />
 
       {/* Atmospheric overlay */}
+
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,transparent_0%,transparent_45%,rgba(0,0,0,0.45)_100%)]" />
 
       {/* Header */}
+
       <header className="absolute inset-x-0 top-0 z-20 flex items-start justify-between p-5 md:p-7">
         <button
           type="button"
@@ -198,6 +269,7 @@ function App() {
         </button>
 
         {/* Profile */}
+
         <div className="flex items-center gap-3 rounded-full border border-white/10 bg-black/30 py-1.5 pl-1.5 pr-3 backdrop-blur-xl">
           {profile.user.avatarUrl && (
             <img
@@ -220,6 +292,7 @@ function App() {
       </header>
 
       {/* Universe info */}
+
       <div className="pointer-events-none absolute bottom-6 left-6 z-10 md:left-7">
         <p className="text-[9px] font-semibold uppercase tracking-[0.3em] text-white/25">
           {profile.repositories.length} repositories
@@ -231,6 +304,7 @@ function App() {
       </div>
 
       {/* Navigation hint */}
+
       <div className="pointer-events-none absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 md:block">
         <div className="rounded-full border border-white/10 bg-black/30 px-4 py-2 text-[9px] font-medium tracking-wide text-white/25 backdrop-blur-xl">
           Drag to explore · Scroll to zoom · Click a repository
