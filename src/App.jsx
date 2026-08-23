@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 
 import {
+  Check,
+  Copy,
   LoaderCircle,
   Search,
+  Share2,
   Sparkles,
 } from "lucide-react";
 
@@ -27,6 +30,7 @@ function App() {
   const [selectedRepo, setSelectedRepo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [copied, setCopied] = useState(false);
 
   const loadProfile = async (value) => {
     const cleanUsername = value.trim().replace(/^@/, "");
@@ -67,6 +71,7 @@ function App() {
 
       setError("");
       setSelectedRepo(null);
+      setCopied(false);
 
       if (pathUsername) {
         setUsername(pathUsername);
@@ -110,6 +115,60 @@ function App() {
     setUsername("");
     setError("");
     setLoading(false);
+    setCopied(false);
+  };
+
+  const handleShare = async () => {
+    const shareUrl = window.location.href;
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: `${profile.user.login}'s Repoverse`,
+          text: `Explore @${profile.user.login}'s GitHub repositories in 3D.`,
+          url: shareUrl,
+        });
+
+        return;
+      }
+
+      await navigator.clipboard.writeText(shareUrl);
+
+      setCopied(true);
+
+      window.setTimeout(() => {
+        setCopied(false);
+      }, 1800);
+    } catch (err) {
+      if (err?.name === "AbortError") {
+        return;
+      }
+
+      try {
+        const textArea = document.createElement("textarea");
+
+        textArea.value = shareUrl;
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
+        textArea.style.pointerEvents = "none";
+
+        document.body.appendChild(textArea);
+
+        textArea.focus();
+        textArea.select();
+
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+
+        setCopied(true);
+
+        window.setTimeout(() => {
+          setCopied(false);
+        }, 1800);
+      } catch {
+        setError("Unable to copy the share link.");
+      }
+    }
   };
 
   /*
@@ -268,25 +327,56 @@ function App() {
           </div>
         </button>
 
-        {/* Profile */}
+        {/* Profile + Share */}
 
-        <div className="flex items-center gap-3 rounded-full border border-white/10 bg-black/30 py-1.5 pl-1.5 pr-3 backdrop-blur-xl">
-          {profile.user.avatarUrl && (
-            <img
-              src={profile.user.avatarUrl}
-              alt=""
-              className="h-7 w-7 rounded-full"
-            />
-          )}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleShare}
+            className="group flex h-9 items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3 text-[10px] font-medium text-white/55 backdrop-blur-xl transition hover:border-white/20 hover:bg-white/[0.06] hover:text-white"
+          >
+            {copied ? (
+              <>
+                <Check className="h-3.5 w-3.5 text-emerald-400" />
+                <span className="hidden sm:inline">
+                  Copied
+                </span>
+              </>
+            ) : navigator.share ? (
+              <>
+                <Share2 className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">
+                  Share
+                </span>
+              </>
+            ) : (
+              <>
+                <Copy className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">
+                  Copy link
+                </span>
+              </>
+            )}
+          </button>
 
-          <div className="hidden text-left sm:block">
-            <p className="text-[11px] font-medium">
-              {profile.user.name || profile.user.login}
-            </p>
+          <div className="flex items-center gap-3 rounded-full border border-white/10 bg-black/30 py-1.5 pl-1.5 pr-3 backdrop-blur-xl">
+            {profile.user.avatarUrl && (
+              <img
+                src={profile.user.avatarUrl}
+                alt=""
+                className="h-7 w-7 rounded-full"
+              />
+            )}
 
-            <p className="text-[9px] text-white/30">
-              @{profile.user.login}
-            </p>
+            <div className="hidden text-left sm:block">
+              <p className="text-[11px] font-medium">
+                {profile.user.name || profile.user.login}
+              </p>
+
+              <p className="text-[9px] text-white/30">
+                @{profile.user.login}
+              </p>
+            </div>
           </div>
         </div>
       </header>
