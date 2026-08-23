@@ -1,10 +1,12 @@
 const GITHUB_API = "https://api.github.com";
 
+const GITHUB_HEADERS = {
+  Accept: "application/vnd.github+json",
+};
+
 async function githubRequest(endpoint) {
   const response = await fetch(`${GITHUB_API}${endpoint}`, {
-    headers: {
-      Accept: "application/vnd.github+json",
-    },
+    headers: GITHUB_HEADERS,
   });
 
   if (!response.ok) {
@@ -18,18 +20,28 @@ async function githubRequest(endpoint) {
       );
     }
 
+    if (response.status === 422) {
+      throw new Error("Invalid GitHub username.");
+    }
+
     throw new Error(`GitHub API error: ${response.status}`);
   }
 
   return response.json();
 }
 
-export async function getGitHubUser(username) {
+function normalizeUsername(username) {
   const cleanUsername = username.trim().replace(/^@/, "");
 
   if (!cleanUsername) {
     throw new Error("Please enter a GitHub username.");
   }
+
+  return cleanUsername;
+}
+
+export async function getGitHubUser(username) {
+  const cleanUsername = normalizeUsername(username);
 
   return githubRequest(
     `/users/${encodeURIComponent(cleanUsername)}`
@@ -37,17 +49,26 @@ export async function getGitHubUser(username) {
 }
 
 export async function getGitHubRepositories(username) {
-  const cleanUsername = username.trim().replace(/^@/, "");
+  const cleanUsername = normalizeUsername(username);
 
-  if (!cleanUsername) {
-    throw new Error("Please enter a GitHub username.");
+  const repositories = [];
+  let page = 1;
+
+  while (true) {
+    const pageRepositories = await githubRequest(
+      `/users/${encodeURIComponent(
+        cleanUsername
+      )}/repos?per_page=100&page=${page}&sort=updated`
+    );
+
+    repositories.push(...pageRepositories);
+
+    if (pageRepositories.length < 100) {
+      break;
+    }
+
+    page += 1;
   }
-
-  const repositories = await githubRequest(
-    `/users/${encodeURIComponent(
-      cleanUsername
-    )}/repos?per_page=100&sort=updated`
-  );
 
   return repositories.map((repo) => ({
     id: repo.id,
@@ -55,20 +76,16 @@ export async function getGitHubRepositories(username) {
     description:
       repo.description ||
       "No description available for this repository.",
-
     language: repo.language || "Unknown",
-
-    stars: repo.stargazers_count,
-    forks: repo.forks_count,
-
+    stars: repo.stargazers_count || 0,
+    forks: repo.forks_count || 0,
     topics: repo.topics || [],
-
-    size: repo.size,
+    size: repo.size || 0,
 
     githubUrl: repo.html_url,
 
-    private: repo.private,
-    archived: repo.archived,
+    private: Boolean(repo.private),
+    archived: Boolean(repo.archived),
 
     createdAt: repo.created_at,
     updatedAt: repo.updated_at,
@@ -79,9 +96,11 @@ export async function getGitHubRepositories(username) {
 }
 
 export async function getGitHubProfile(username) {
+  const cleanUsername = normalizeUsername(username);
+
   const [user, repositories] = await Promise.all([
-    getGitHubUser(username),
-    getGitHubRepositories(username),
+    getGitHubUser(cleanUsername),
+    getGitHubRepositories(cleanUsername),
   ]);
 
   return {
@@ -90,9 +109,9 @@ export async function getGitHubProfile(username) {
       name: user.name,
       avatarUrl: user.avatar_url,
       bio: user.bio,
-      followers: user.followers,
-      following: user.following,
-      publicRepos: user.public_repos,
+      followers: user.followers || 0,
+      following: user.following || 0,
+      publicRepos: user.public_repos || 0,
       profileUrl: user.html_url,
     },
 
