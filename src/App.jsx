@@ -8,6 +8,7 @@ import {
 import { getGitHubProfile } from "./lib/github";
 import Universe from "./components/3d/Universe";
 import RepoPanel from "./components/RepoPanel";
+import ProfileHUD from "./components/ProfileHUD";
 
 function App() {
   const [username, setUsername] = useState("");
@@ -168,6 +169,8 @@ function App() {
         selectedRepo={selectedRepo}
         onSelect={setSelectedRepo}
       />
+
+      <ProfileHUD profile={profile} />
 
       {/* Atmospheric overlay */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,transparent_0%,transparent_45%,rgba(0,0,0,0.45)_100%)]" />
