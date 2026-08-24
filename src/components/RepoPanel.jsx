@@ -19,16 +19,16 @@ function RepoPanel({ repo, onClose }) {
   if (!repo) return null;
 
   return (
-    <aside className="absolute right-5 top-20 z-30 w-[min(380px,calc(100%-40px))] md:right-7 md:top-24">
-      <Card className="overflow-hidden border-white/10 bg-[#0a0a0d]/90 text-white shadow-2xl shadow-black/50 backdrop-blur-2xl">
-        <CardHeader className="p-5 pb-4">
+    <aside className="absolute inset-x-3 bottom-3 z-30 sm:inset-x-auto sm:right-5 sm:top-20 sm:bottom-auto sm:w-[min(380px,calc(100%-40px))] md:right-7 md:top-24">
+      <Card className="max-h-[72svh] overflow-y-auto border-white/10 bg-[#0a0a0d]/90 text-white shadow-2xl shadow-black/50 backdrop-blur-2xl sm:max-h-none">
+        <CardHeader className="p-4 pb-3 sm:p-5 sm:pb-4">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <p className="mb-2 text-[9px] font-semibold uppercase tracking-[0.25em] text-white/30">
+              <p className="mb-1.5 text-[9px] font-semibold uppercase tracking-[0.25em] text-white/30 sm:mb-2">
                 Repository
               </p>
 
-              <h2 className="truncate text-xl font-semibold tracking-tight">
+              <h2 className="truncate text-lg font-semibold tracking-tight sm:text-xl">
                 {repo.name}
               </h2>
             </div>
@@ -46,12 +46,12 @@ function RepoPanel({ repo, onClose }) {
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-5 px-5 pb-5">
-          <p className="text-sm leading-6 text-white/50">
+        <CardContent className="space-y-4 px-4 pb-4 sm:space-y-5 sm:px-5 sm:pb-5">
+          <p className="text-xs leading-5 text-white/50 sm:text-sm sm:leading-6">
             {repo.description}
           </p>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1.5 sm:gap-2">
             <Badge
               variant="secondary"
               className="border border-white/10 bg-white/[0.05] text-white/70"

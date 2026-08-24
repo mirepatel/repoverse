@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import {
   Check,
@@ -25,14 +25,14 @@ function getUsernameFromPath() {
 }
 
 function App() {
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState(() => getUsernameFromPath());
   const [profile, setProfile] = useState(null);
   const [selectedRepo, setSelectedRepo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
 
-  const loadProfile = async (value) => {
+  const loadProfile = useCallback(async (value) => {
     const cleanUsername = value.trim().replace(/^@/, "");
 
     if (!cleanUsername) {
@@ -56,13 +56,12 @@ function App() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     const initialUsername = getUsernameFromPath();
 
     if (initialUsername) {
-      setUsername(initialUsername);
       loadProfile(initialUsername);
     }
 
@@ -88,7 +87,7 @@ function App() {
     return () => {
       window.removeEventListener("popstate", handlePopState);
     };
-  }, []);
+  }, [loadProfile]);
 
   const handleExplore = async (event) => {
     event.preventDefault();
@@ -177,17 +176,15 @@ function App() {
 
   if (!profile) {
     return (
-      <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#030305] px-6 text-white">
+      <main className="relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-[#030305] px-5 text-white sm:px-6">
         {/* Background atmosphere */}
-
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600/[0.06] blur-[140px]" />
+          <div className="absolute left-1/2 top-1/2 h-150 w-150 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600/6 blur-[140px]" />
 
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#030305_75%)]" />
         </div>
 
         {/* Atmospheric points */}
-
         <div className="pointer-events-none absolute inset-0 opacity-40">
           <div className="absolute left-[18%] top-[24%] h-1 w-1 rounded-full bg-white" />
           <div className="absolute left-[76%] top-[28%] h-1 w-1 rounded-full bg-white/60" />
@@ -196,9 +193,8 @@ function App() {
         </div>
 
         {/* Brand */}
-
-        <div className="absolute left-6 top-6 flex items-center gap-3 md:left-8 md:top-8">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] backdrop-blur-xl">
+        <div className="absolute left-5 top-5 flex items-center gap-3 sm:left-6 sm:top-6 md:left-8 md:top-8">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/4 backdrop-blur-xl">
             <Sparkles className="h-4 w-4" />
           </div>
 
@@ -214,34 +210,31 @@ function App() {
         </div>
 
         {/* Main */}
-
         <section className="relative z-10 w-full max-w-xl text-center">
-          <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-xl font-semibold shadow-2xl shadow-violet-950/20 backdrop-blur-xl">
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/4 text-xl font-semibold shadow-2xl shadow-violet-950/20 backdrop-blur-xl sm:mb-6">
             GH
           </div>
 
-          <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.35em] text-white/30">
+          <p className="mb-3 text-[9px] font-semibold uppercase tracking-[0.3em] text-white/30 sm:text-[10px] sm:tracking-[0.35em]">
             Explore GitHub differently
           </p>
 
-          <h1 className="text-4xl font-semibold tracking-[-0.04em] md:text-6xl">
+          <h1 className="text-4xl font-semibold tracking-[-0.04em] sm:text-5xl md:text-6xl">
             Your GitHub,
             <br />
-            <span className="text-white/40">
-              reimagined.
-            </span>
+            <span className="text-white/40">reimagined.</span>
           </h1>
 
-          <p className="mx-auto mt-5 max-w-md text-sm leading-6 text-white/35">
+          <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-white/35 sm:mt-5">
             Turn any public GitHub profile into an interactive 3D
             universe of repositories.
           </p>
 
           <form
             onSubmit={handleExplore}
-            className="mx-auto mt-9 max-w-md"
+            className="mx-auto mt-8 max-w-md sm:mt-9"
           >
-            <div className="flex h-12 items-center rounded-xl border border-white/10 bg-white/[0.035] p-1.5 shadow-2xl backdrop-blur-xl transition focus-within:border-white/20 focus-within:bg-white/[0.05]">
+            <div className="flex h-12 items-center rounded-xl border border-white/10 bg-white/[0.035] p-1.5 shadow-2xl backdrop-blur-xl transition focus-within:border-white/20 focus-within:bg-white/5">
               <Search className="ml-3 h-4 w-4 shrink-0 text-white/25" />
 
               <input
@@ -258,12 +251,12 @@ function App() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex h-9 items-center gap-2 rounded-lg bg-white px-4 text-xs font-semibold text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex h-9 shrink-0 items-center gap-2 rounded-lg bg-white px-3.5 text-xs font-semibold text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-50 sm:px-4"
               >
                 {loading ? (
                   <>
                     <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
-                    Exploring
+                    <span className="hidden xs:inline">Exploring</span>
                   </>
                 ) : (
                   "Explore"
@@ -291,7 +284,7 @@ function App() {
    */
 
   return (
-    <main className="relative h-screen w-full overflow-hidden bg-[#030305] text-white">
+    <main className="relative h-[100svh] w-full overflow-hidden bg-[#030305] text-white">
       <Universe
         repositories={profile.repositories}
         selectedRepo={selectedRepo}
@@ -301,18 +294,16 @@ function App() {
       <ProfileHUD profile={profile} />
 
       {/* Atmospheric overlay */}
-
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,transparent_0%,transparent_45%,rgba(0,0,0,0.45)_100%)]" />
 
       {/* Header */}
-
-      <header className="absolute inset-x-0 top-0 z-20 flex items-start justify-between p-5 md:p-7">
+      <header className="absolute inset-x-0 top-0 z-20 flex items-start justify-between p-3.5 sm:p-5 md:p-7">
         <button
           type="button"
           onClick={handleReset}
-          className="flex items-center gap-3 rounded-xl p-1 text-left transition hover:bg-white/[0.04]"
+          className="flex items-center gap-2.5 rounded-xl p-1 text-left transition hover:bg-white/4 sm:gap-3"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] backdrop-blur-xl">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/4 backdrop-blur-xl">
             <Sparkles className="h-4 w-4" />
           </div>
 
@@ -328,38 +319,38 @@ function App() {
         </button>
 
         {/* Profile + Share */}
-
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <button
             type="button"
             onClick={handleShare}
-            className="group flex h-9 items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3 text-[10px] font-medium text-white/55 backdrop-blur-xl transition hover:border-white/20 hover:bg-white/[0.06] hover:text-white"
+            className="group flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-black/30 text-white/55 backdrop-blur-xl transition hover:border-white/20 hover:bg-white/6 hover:text-white sm:w-auto sm:gap-2 sm:px-3"
+            aria-label={copied ? "Link copied" : "Share universe"}
           >
             {copied ? (
               <>
                 <Check className="h-3.5 w-3.5 text-emerald-400" />
-                <span className="hidden sm:inline">
+                <span className="hidden text-[10px] font-medium sm:inline">
                   Copied
                 </span>
               </>
             ) : navigator.share ? (
               <>
                 <Share2 className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">
+                <span className="hidden text-[10px] font-medium sm:inline">
                   Share
                 </span>
               </>
             ) : (
               <>
                 <Copy className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">
+                <span className="hidden text-[10px] font-medium sm:inline">
                   Copy link
                 </span>
               </>
             )}
           </button>
 
-          <div className="flex items-center gap-3 rounded-full border border-white/10 bg-black/30 py-1.5 pl-1.5 pr-3 backdrop-blur-xl">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-black/30 backdrop-blur-xl sm:h-auto sm:w-auto sm:gap-3 sm:py-1.5 sm:pl-1.5 sm:pr-3">
             {profile.user.avatarUrl && (
               <img
                 src={profile.user.avatarUrl}
@@ -382,20 +373,18 @@ function App() {
       </header>
 
       {/* Universe info */}
-
-      <div className="pointer-events-none absolute bottom-6 left-6 z-10 md:left-7">
-        <p className="text-[9px] font-semibold uppercase tracking-[0.3em] text-white/25">
+      <div className="pointer-events-none absolute bottom-4 left-4 z-10 sm:bottom-6 sm:left-6 md:left-7">
+        <p className="text-[8px] font-semibold uppercase tracking-[0.28em] text-white/25 sm:text-[9px] sm:tracking-[0.3em]">
           {profile.repositories.length} repositories
         </p>
 
-        <h2 className="mt-1 text-lg font-medium tracking-tight text-white/70">
+        <h2 className="mt-1 text-base font-medium tracking-tight text-white/70 sm:text-lg">
           @{profile.user.login}
         </h2>
       </div>
 
       {/* Navigation hint */}
-
-      <div className="pointer-events-none absolute bottom-6 left-1/2 z-10 hidden -translate-x-1/2 md:block">
+      <div className="pointer-events-none absolute bottom-4 left-1/2 z-10 hidden -translate-x-1/2 md:bottom-6 md:block">
         <div className="rounded-full border border-white/10 bg-black/30 px-4 py-2 text-[9px] font-medium tracking-wide text-white/25 backdrop-blur-xl">
           Drag to explore · Scroll to zoom · Click a repository
         </div>

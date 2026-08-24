@@ -1,11 +1,34 @@
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
+
 import {
   Float,
   OrbitControls,
   Stars,
 } from "@react-three/drei";
 
+import { useEffect } from "react";
+
 import RepositoryNode from "./RepositoryNode";
+
+function ResponsiveCamera() {
+  const { camera, size } = useThree();
+
+  useEffect(() => {
+    const mobile = size.width < 640;
+
+    camera.position.set(
+      0,
+      mobile ? 1.1 : 1.5,
+      mobile ? 15.5 : 12
+    );
+
+    camera.fov = mobile ? 55 : 48;
+
+    camera.updateProjectionMatrix();
+  }, [camera, size.width]);
+
+  return null;
+}
 
 function Universe({ repositories, selectedRepo, onSelect }) {
   return (
@@ -23,7 +46,12 @@ function Universe({ repositories, selectedRepo, onSelect }) {
       >
         <color attach="background" args={["#030305"]} />
 
-        <fog attach="fog" args={["#030305", 14, 30]} />
+        <fog
+          attach="fog"
+          args={["#030305", 14, 30]}
+        />
+
+        <ResponsiveCamera />
 
         <ambientLight intensity={0.18} />
 
