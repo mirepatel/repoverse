@@ -18,8 +18,7 @@ function LandingHero({
   error,
 }) {
   const handleExample = (profile) => {
-    setUsername(profile);
-    setTimeout(() => onExplore(), 0);
+    onExplore(profile);
   };
 
   return (
@@ -133,9 +132,11 @@ function LandingHero({
                 type="button"
                 onClick={() => handleExample(profile)}
                 disabled={loading}
-                className="rounded-full border border-white/8 bg-white/3 px-3 py-1.5 text-[10px] font-medium text-white/40 transition hover:border-white/15 hover:bg-white/6 hover:text-white/70 disabled:pointer-events-none disabled:opacity-50"
+                className="group rounded-full border border-white/8 bg-white/3 px-3 py-1.5 text-[10px] font-medium text-white/40 transition hover:border-white/15 hover:bg-white/6 hover:text-white/70 disabled:pointer-events-none disabled:opacity-50"
               >
                 @{profile}
+
+                <ArrowRight className="ml-1 inline-block h-2.5 w-2.5 -translate-x-0.5 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-60" />
               </button>
             ))}
           </div>

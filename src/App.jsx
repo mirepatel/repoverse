@@ -136,10 +136,17 @@ function App() {
     };
   }, [loadProfile]);
 
-  const handleExplore = async (event) => {
-    event.preventDefault();
+  const handleExplore = async (eventOrUsername) => {
+    if (typeof eventOrUsername !== "string") {
+      eventOrUsername.preventDefault();
+    }
 
-    const cleanUsername = username
+    const value =
+      typeof eventOrUsername === "string"
+        ? eventOrUsername
+        : username;
+
+    const cleanUsername = value
       .trim()
       .replace(/^@/, "");
 
