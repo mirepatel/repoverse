@@ -35,6 +35,19 @@ function App() {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
 
+  /*
+   * PAGE TITLE
+   */
+
+  useEffect(() => {
+    if (profile?.user?.login) {
+      document.title = `@${profile.user.login} | Repoverse`;
+      return;
+    }
+
+    document.title = "Repoverse | GitHub in 3D";
+  }, [profile]);
+
   const loadProfile = useCallback(async (value) => {
     const cleanUsername = value.trim().replace(/^@/, "");
 
