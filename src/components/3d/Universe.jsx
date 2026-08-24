@@ -1,43 +1,18 @@
-import { Canvas, useThree } from "@react-three/fiber";
+import { Canvas } from "@react-three/fiber";
 
 import {
   Float,
   OrbitControls,
+  PerspectiveCamera,
   Stars,
 } from "@react-three/drei";
 
-import { useEffect } from "react";
-
 import RepositoryNode from "./RepositoryNode";
-
-function ResponsiveCamera() {
-  const { camera, size } = useThree();
-
-  useEffect(() => {
-    const mobile = size.width < 640;
-
-    camera.position.set(
-      0,
-      mobile ? 1.1 : 1.5,
-      mobile ? 15.5 : 12
-    );
-
-    camera.fov = mobile ? 55 : 48;
-
-    camera.updateProjectionMatrix();
-  }, [camera, size.width]);
-
-  return null;
-}
 
 function Universe({ repositories, selectedRepo, onSelect }) {
   return (
     <div className="absolute inset-0">
       <Canvas
-        camera={{
-          position: [0, 1.5, 12],
-          fov: 48,
-        }}
         dpr={[1, 2]}
         gl={{
           antialias: true,
@@ -51,7 +26,11 @@ function Universe({ repositories, selectedRepo, onSelect }) {
           args={["#030305", 14, 30]}
         />
 
-        <ResponsiveCamera />
+        <PerspectiveCamera
+          makeDefault
+          position={[0, 1.5, 12]}
+          fov={48}
+        />
 
         <ambientLight intensity={0.18} />
 
@@ -84,7 +63,9 @@ function Universe({ repositories, selectedRepo, onSelect }) {
           floatIntensity={0.12}
         >
           <mesh>
-            <sphereGeometry args={[0.45, 32, 32]} />
+            <sphereGeometry
+              args={[0.45, 32, 32]}
+            />
 
             <meshStandardMaterial
               color="#332b68"

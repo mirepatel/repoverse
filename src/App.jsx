@@ -12,7 +12,7 @@ import {
 import { getGitHubProfile } from "./lib/github";
 import Universe from "./components/3d/Universe";
 import RepoPanel from "./components/RepoPanel";
-import ProfileHUD from "./components/ProfileHUD";
+import ProfilePopover from "./components/ProfilePopover";
 
 function getUsernameFromPath() {
   const path = window.location.pathname.replace(/^\/+|\/+$/g, "");
@@ -25,9 +25,13 @@ function getUsernameFromPath() {
 }
 
 function App() {
-  const [username, setUsername] = useState(() => getUsernameFromPath());
+  const [username, setUsername] = useState(() =>
+    getUsernameFromPath()
+  );
+
   const [profile, setProfile] = useState(null);
   const [selectedRepo, setSelectedRepo] = useState(null);
+  const [profileOpen, setProfileOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
@@ -44,6 +48,7 @@ function App() {
     setLoading(true);
     setError("");
     setSelectedRepo(null);
+    setProfileOpen(false);
 
     try {
       const data = await getGitHubProfile(cleanUsername);
@@ -62,7 +67,43 @@ function App() {
     const initialUsername = getUsernameFromPath();
 
     if (initialUsername) {
-      loadProfile(initialUsername);
+      let cancelled = false;
+
+      const loadInitialProfile = async () => {
+        const cleanUsername = initialUsername
+          .trim()
+          .replace(/^@/, "");
+
+        setLoading(true);
+        setError("");
+
+        try {
+          const data =
+            await getGitHubProfile(cleanUsername);
+
+          if (cancelled) return;
+
+          setProfile(data);
+          setUsername(data.user.login);
+        } catch (err) {
+          if (cancelled) return;
+
+          setProfile(null);
+          setError(
+            err.message || "Something went wrong."
+          );
+        } finally {
+          if (!cancelled) {
+            setLoading(false);
+          }
+        }
+      };
+
+      loadInitialProfile();
+
+      return () => {
+        cancelled = true;
+      };
     }
 
     const handlePopState = () => {
@@ -71,6 +112,7 @@ function App() {
       setError("");
       setSelectedRepo(null);
       setCopied(false);
+      setProfileOpen(false);
 
       if (pathUsername) {
         setUsername(pathUsername);
@@ -82,24 +124,34 @@ function App() {
       }
     };
 
-    window.addEventListener("popstate", handlePopState);
+    window.addEventListener(
+      "popstate",
+      handlePopState
+    );
 
     return () => {
-      window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener(
+        "popstate",
+        handlePopState
+      );
     };
   }, [loadProfile]);
 
   const handleExplore = async (event) => {
     event.preventDefault();
 
-    const cleanUsername = username.trim().replace(/^@/, "");
+    const cleanUsername = username
+      .trim()
+      .replace(/^@/, "");
 
     if (!cleanUsername) {
       setError("Enter a GitHub username.");
       return;
     }
 
-    const nextPath = `/${encodeURIComponent(cleanUsername)}`;
+    const nextPath = `/${encodeURIComponent(
+      cleanUsername
+    )}`;
 
     window.history.pushState({}, "", nextPath);
 
@@ -111,6 +163,7 @@ function App() {
 
     setProfile(null);
     setSelectedRepo(null);
+    setProfileOpen(false);
     setUsername("");
     setError("");
     setLoading(false);
@@ -144,7 +197,8 @@ function App() {
       }
 
       try {
-        const textArea = document.createElement("textarea");
+        const textArea =
+          document.createElement("textarea");
 
         textArea.value = shareUrl;
         textArea.style.position = "fixed";
@@ -222,12 +276,14 @@ function App() {
           <h1 className="text-4xl font-semibold tracking-[-0.04em] sm:text-5xl md:text-6xl">
             Your GitHub,
             <br />
-            <span className="text-white/40">reimagined.</span>
+            <span className="text-white/40">
+              reimagined.
+            </span>
           </h1>
 
           <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-white/35 sm:mt-5">
-            Turn any public GitHub profile into an interactive 3D
-            universe of repositories.
+            Turn any public GitHub profile into an
+            interactive 3D universe of repositories.
           </p>
 
           <form
@@ -256,7 +312,10 @@ function App() {
                 {loading ? (
                   <>
                     <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
-                    <span className="hidden xs:inline">Exploring</span>
+
+                    <span className="hidden xs:inline">
+                      Exploring
+                    </span>
                   </>
                 ) : (
                   "Explore"
@@ -279,6 +338,18 @@ function App() {
     );
   }
 
+  const languages = new Set(
+    profile.repositories
+      .map((repo) => repo.language)
+      .filter(Boolean)
+      .filter((language) => language !== "Unknown")
+  );
+
+  const totalStars = profile.repositories.reduce(
+    (total, repo) => total + (repo.stars || 0),
+    0
+  );
+
   /*
    * REPOVERSE EXPERIENCE
    */
@@ -291,13 +362,12 @@ function App() {
         onSelect={setSelectedRepo}
       />
 
-      <ProfileHUD profile={profile} />
-
       {/* Atmospheric overlay */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,transparent_0%,transparent_45%,rgba(0,0,0,0.45)_100%)]" />
 
       {/* Header */}
-      <header className="absolute inset-x-0 top-0 z-20 flex items-start justify-between p-3.5 sm:p-5 md:p-7">
+      <header className="absolute inset-x-0 top-0 z-40 flex items-start justify-between p-3.5 sm:p-5 md:p-7">
+        {/* Brand */}
         <button
           type="button"
           onClick={handleReset}
@@ -318,17 +388,21 @@ function App() {
           </div>
         </button>
 
-        {/* Profile + Share */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        {/* Actions */}
+        <div className="relative flex items-center gap-1.5 sm:gap-2">
+          {/* Share */}
           <button
             type="button"
             onClick={handleShare}
             className="group flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-black/30 text-white/55 backdrop-blur-xl transition hover:border-white/20 hover:bg-white/6 hover:text-white sm:w-auto sm:gap-2 sm:px-3"
-            aria-label={copied ? "Link copied" : "Share universe"}
+            aria-label={
+              copied ? "Link copied" : "Share universe"
+            }
           >
             {copied ? (
               <>
                 <Check className="h-3.5 w-3.5 text-emerald-400" />
+
                 <span className="hidden text-[10px] font-medium sm:inline">
                   Copied
                 </span>
@@ -336,6 +410,7 @@ function App() {
             ) : navigator.share ? (
               <>
                 <Share2 className="h-3.5 w-3.5" />
+
                 <span className="hidden text-[10px] font-medium sm:inline">
                   Share
                 </span>
@@ -343,6 +418,7 @@ function App() {
             ) : (
               <>
                 <Copy className="h-3.5 w-3.5" />
+
                 <span className="hidden text-[10px] font-medium sm:inline">
                   Copy link
                 </span>
@@ -350,33 +426,74 @@ function App() {
             )}
           </button>
 
-          <div className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-black/30 backdrop-blur-xl sm:h-auto sm:w-auto sm:gap-3 sm:py-1.5 sm:pl-1.5 sm:pr-3">
-            {profile.user.avatarUrl && (
+          {/* Profile */}
+          <button
+            type="button"
+            onClick={() =>
+              setProfileOpen((open) => !open)
+            }
+            aria-expanded={profileOpen}
+            aria-label="Open profile"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-black/30 backdrop-blur-xl transition hover:border-white/20 hover:bg-white/5 sm:h-auto sm:w-auto sm:gap-3 sm:py-1.5 sm:pl-1.5 sm:pr-3"
+          >
+            {profile.user.avatarUrl ? (
               <img
                 src={profile.user.avatarUrl}
                 alt=""
                 className="h-7 w-7 rounded-full"
               />
+            ) : (
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/5 text-[9px] font-medium text-white/50">
+                {profile.user.login
+                  ?.slice(0, 2)
+                  .toUpperCase()}
+              </div>
             )}
 
             <div className="hidden text-left sm:block">
               <p className="text-[11px] font-medium">
-                {profile.user.name || profile.user.login}
+                {profile.user.name ||
+                  profile.user.login}
               </p>
 
               <p className="text-[9px] text-white/30">
                 @{profile.user.login}
               </p>
             </div>
-          </div>
+          </button>
+
+          {profileOpen && (
+            <ProfilePopover
+              profile={profile}
+              onClose={() => setProfileOpen(false)}
+            />
+          )}
         </div>
       </header>
 
-      {/* Universe info */}
+      {/* Universe information */}
       <div className="pointer-events-none absolute bottom-4 left-4 z-10 sm:bottom-6 sm:left-6 md:left-7">
-        <p className="text-[8px] font-semibold uppercase tracking-[0.28em] text-white/25 sm:text-[9px] sm:tracking-[0.3em]">
-          {profile.repositories.length} repositories
-        </p>
+        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+          <span className="text-[8px] font-semibold uppercase tracking-[0.28em] text-white/25 sm:text-[9px] sm:tracking-[0.3em]">
+            {profile.repositories.length} repositories
+          </span>
+
+          <span className="text-[8px] text-white/10">
+            ·
+          </span>
+
+          <span className="text-[8px] font-semibold uppercase tracking-[0.28em] text-white/20 sm:text-[9px]">
+            {languages.size} languages
+          </span>
+
+          <span className="text-[8px] text-white/10">
+            ·
+          </span>
+
+          <span className="text-[8px] font-semibold uppercase tracking-[0.28em] text-white/20 sm:text-[9px]">
+            {totalStars} stars
+          </span>
+        </div>
 
         <h2 className="mt-1 text-base font-medium tracking-tight text-white/70 sm:text-lg">
           @{profile.user.login}
@@ -390,6 +507,7 @@ function App() {
         </div>
       </div>
 
+      {/* Repository panel */}
       <RepoPanel
         repo={selectedRepo}
         onClose={() => setSelectedRepo(null)}
