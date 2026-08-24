@@ -3,8 +3,6 @@ import { useCallback, useEffect, useState } from "react";
 import {
   Check,
   Copy,
-  LoaderCircle,
-  Search,
   Share2,
   Sparkles,
 } from "lucide-react";
@@ -13,6 +11,7 @@ import { getGitHubProfile } from "./lib/github";
 import Universe from "./components/3d/Universe";
 import RepoPanel from "./components/RepoPanel";
 import ProfilePopover from "./components/ProfilePopover";
+import LandingHero from "./components/landing/LandingHero";
 
 function getUsernameFromPath() {
   const path = window.location.pathname.replace(/^\/+|\/+$/g, "");
@@ -230,111 +229,13 @@ function App() {
 
   if (!profile) {
     return (
-      <main className="relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-[#030305] px-5 text-white sm:px-6">
-        {/* Background atmosphere */}
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute left-1/2 top-1/2 h-150 w-150 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-600/6 blur-[140px]" />
-
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#030305_75%)]" />
-        </div>
-
-        {/* Atmospheric points */}
-        <div className="pointer-events-none absolute inset-0 opacity-40">
-          <div className="absolute left-[18%] top-[24%] h-1 w-1 rounded-full bg-white" />
-          <div className="absolute left-[76%] top-[28%] h-1 w-1 rounded-full bg-white/60" />
-          <div className="absolute left-[27%] top-[72%] h-1 w-1 rounded-full bg-white/50" />
-          <div className="absolute left-[82%] top-[70%] h-1 w-1 rounded-full bg-white/70" />
-        </div>
-
-        {/* Brand */}
-        <div className="absolute left-5 top-5 flex items-center gap-3 sm:left-6 sm:top-6 md:left-8 md:top-8">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/4 backdrop-blur-xl">
-            <Sparkles className="h-4 w-4" />
-          </div>
-
-          <div>
-            <p className="text-sm font-semibold tracking-tight">
-              Repoverse
-            </p>
-
-            <p className="text-[8px] font-medium uppercase tracking-[0.28em] text-white/30">
-              GitHub in 3D
-            </p>
-          </div>
-        </div>
-
-        {/* Main */}
-        <section className="relative z-10 w-full max-w-xl text-center">
-          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/4 text-xl font-semibold shadow-2xl shadow-violet-950/20 backdrop-blur-xl sm:mb-6">
-            GH
-          </div>
-
-          <p className="mb-3 text-[9px] font-semibold uppercase tracking-[0.3em] text-white/30 sm:text-[10px] sm:tracking-[0.35em]">
-            Explore GitHub differently
-          </p>
-
-          <h1 className="text-4xl font-semibold tracking-[-0.04em] sm:text-5xl md:text-6xl">
-            Your GitHub,
-            <br />
-            <span className="text-white/40">
-              reimagined.
-            </span>
-          </h1>
-
-          <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-white/35 sm:mt-5">
-            Turn any public GitHub profile into an
-            interactive 3D universe of repositories.
-          </p>
-
-          <form
-            onSubmit={handleExplore}
-            className="mx-auto mt-8 max-w-md sm:mt-9"
-          >
-            <div className="flex h-12 items-center rounded-xl border border-white/10 bg-white/[0.035] p-1.5 shadow-2xl backdrop-blur-xl transition focus-within:border-white/20 focus-within:bg-white/5">
-              <Search className="ml-3 h-4 w-4 shrink-0 text-white/25" />
-
-              <input
-                value={username}
-                onChange={(event) => {
-                  setUsername(event.target.value);
-                  setError("");
-                }}
-                placeholder="GitHub username"
-                className="min-w-0 flex-1 bg-transparent px-3 text-sm text-white outline-none placeholder:text-white/25"
-                disabled={loading}
-              />
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex h-9 shrink-0 items-center gap-2 rounded-lg bg-white px-3.5 text-xs font-semibold text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-50 sm:px-4"
-              >
-                {loading ? (
-                  <>
-                    <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
-
-                    <span className="hidden xs:inline">
-                      Exploring
-                    </span>
-                  </>
-                ) : (
-                  "Explore"
-                )}
-              </button>
-            </div>
-
-            {error && (
-              <p className="mt-3 text-xs text-red-400/80">
-                {error}
-              </p>
-            )}
-          </form>
-
-          <p className="mt-5 text-[10px] text-white/20">
-            Try a public GitHub username
-          </p>
-        </section>
-      </main>
+      <LandingHero
+        username={username}
+        setUsername={setUsername}
+        loading={loading}
+        error={error}
+        onExplore={handleExplore}
+      />
     );
   }
 
@@ -342,7 +243,9 @@ function App() {
     profile.repositories
       .map((repo) => repo.language)
       .filter(Boolean)
-      .filter((language) => language !== "Unknown")
+      .filter(
+        (language) => language !== "Unknown"
+      )
   );
 
   const totalStars = profile.repositories.reduce(
@@ -396,7 +299,9 @@ function App() {
             onClick={handleShare}
             className="group flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-black/30 text-white/55 backdrop-blur-xl transition hover:border-white/20 hover:bg-white/6 hover:text-white sm:w-auto sm:gap-2 sm:px-3"
             aria-label={
-              copied ? "Link copied" : "Share universe"
+              copied
+                ? "Link copied"
+                : "Share universe"
             }
           >
             {copied ? (
@@ -465,7 +370,9 @@ function App() {
           {profileOpen && (
             <ProfilePopover
               profile={profile}
-              onClose={() => setProfileOpen(false)}
+              onClose={() =>
+                setProfileOpen(false)
+              }
             />
           )}
         </div>
@@ -475,7 +382,8 @@ function App() {
       <div className="pointer-events-none absolute bottom-4 left-4 z-10 sm:bottom-6 sm:left-6 md:left-7">
         <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
           <span className="text-[8px] font-semibold uppercase tracking-[0.28em] text-white/25 sm:text-[9px] sm:tracking-[0.3em]">
-            {profile.repositories.length} repositories
+            {profile.repositories.length}{" "}
+            repositories
           </span>
 
           <span className="text-[8px] text-white/10">
@@ -503,7 +411,8 @@ function App() {
       {/* Navigation hint */}
       <div className="pointer-events-none absolute bottom-4 left-1/2 z-10 hidden -translate-x-1/2 md:bottom-6 md:block">
         <div className="rounded-full border border-white/10 bg-black/30 px-4 py-2 text-[9px] font-medium tracking-wide text-white/25 backdrop-blur-xl">
-          Drag to explore · Scroll to zoom · Click a repository
+          Drag to explore · Scroll to zoom · Click
+          a repository
         </div>
       </div>
 
