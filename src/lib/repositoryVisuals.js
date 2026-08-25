@@ -81,7 +81,10 @@ const LANGUAGE_STYLES = {
 };
 
 function clamp(value, min, max) {
-  return Math.min(Math.max(value, min), max);
+  return Math.min(
+    Math.max(value, min),
+    max
+  );
 }
 
 function getActivityScore(repo) {
@@ -96,10 +99,6 @@ function getActivityScore(repo) {
     (now.getTime() - updated.getTime()) /
     (1000 * 60 * 60 * 24);
 
-  /*
-   * Recent repositories get a higher score.
-   * Older repositories gradually move toward zero.
-   */
   return clamp(
     Math.exp(-ageInDays / 365),
     0.12,
@@ -108,25 +107,33 @@ function getActivityScore(repo) {
 }
 
 function getPopularityScore(repo) {
-  const stars = Math.max(repo.stars || 0, 0);
-  const forks = Math.max(repo.forks || 0, 0);
+  const stars = Math.max(
+    repo.stars || 0,
+    0
+  );
 
-  /*
-   * Logarithmic scaling prevents a single very popular
-   * repository from completely dominating the universe.
-   */
-  const starScore = Math.log10(stars + 1);
-  const forkScore = Math.log10(forks + 1);
+  const forks = Math.max(
+    repo.forks || 0,
+    0
+  );
+
+  const starScore =
+    Math.log10(stars + 1);
+
+  const forkScore =
+    Math.log10(forks + 1);
 
   return clamp(
-    starScore * 0.8 + forkScore * 0.35,
+    starScore * 0.8 +
+      forkScore * 0.35,
     0,
     5
   );
 }
 
 function getPlanetSize(repo) {
-  const popularity = getPopularityScore(repo);
+  const popularity =
+    getPopularityScore(repo);
 
   return clamp(
     0.26 + popularity * 0.055,
@@ -136,36 +143,55 @@ function getPlanetSize(repo) {
 }
 
 function getOrbitRadius(repo, index) {
-  const activity = getActivityScore(repo);
+  const activity =
+    getActivityScore(repo);
 
-  const baseRadius = 3.5 + (index % 4) * 1.15;
+  const baseRadius =
+    3.5 + (index % 4) * 1.15;
 
-  /*
-   * Active repositories stay closer to the center.
-   * Older repositories naturally drift outward.
-   */
-  return baseRadius + (1 - activity) * 3;
+  return (
+    baseRadius +
+    (1 - activity) * 3
+  );
 }
 
-export function getRepositoryVisuals(repo, index) {
+export function getRepositoryVisuals(
+  repo,
+  index
+) {
   const language =
     LANGUAGE_STYLES[repo.language] ||
     LANGUAGE_STYLES.Unknown;
 
-  const activity = getActivityScore(repo);
-  const popularity = getPopularityScore(repo);
+  const activity =
+    getActivityScore(repo);
+
+  const popularity =
+    getPopularityScore(repo);
 
   return {
     color: language.color,
     glow: language.glow,
-
     size: getPlanetSize(repo),
-
     activity,
     popularity,
-
-    orbitRadius: getOrbitRadius(repo, index),
-
+    orbitRadius: getOrbitRadius(
+      repo,
+      index
+    ),
     archived: Boolean(repo.archived),
   };
+}
+
+export function getRepositoryPriority(repo) {
+  const activity =
+    getActivityScore(repo);
+
+  const popularity =
+    getPopularityScore(repo);
+
+  return (
+    popularity * 2 +
+    activity
+  );
 }

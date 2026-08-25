@@ -6,116 +6,118 @@ import {
   X,
 } from "lucide-react";
 
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from "./ui/card";
-import { Separator } from "./ui/separator";
-
 function RepoPanel({ repo, onClose }) {
   if (!repo) return null;
 
   return (
     <aside className="absolute inset-x-3 bottom-3 z-30 sm:inset-x-auto sm:right-5 sm:top-20 sm:bottom-auto sm:w-[min(380px,calc(100%-40px))] md:right-7 md:top-24">
-      <Card className="max-h-[72svh] overflow-y-auto border-white/10 bg-[#0a0a0d]/90 text-white shadow-2xl shadow-black/50 backdrop-blur-2xl sm:max-h-none">
-        <CardHeader className="p-4 pb-3 sm:p-5 sm:pb-4">
+      <div className="max-h-[72svh] overflow-y-auto rounded-2xl border border-white/10 bg-[#09090c]/95 text-white shadow-2xl shadow-black/60 backdrop-blur-2xl sm:max-h-[calc(100svh-7rem)]">
+        {/* Header */}
+        <div className="px-4 pt-4 pb-3 sm:px-5 sm:pt-5 sm:pb-3.5">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
-              <p className="mb-1.5 text-[9px] font-semibold uppercase tracking-[0.25em] text-white/30 sm:mb-2">
+              <p className="mb-1.5 text-[9px] font-semibold uppercase tracking-[0.25em] text-white/30">
                 Repository
               </p>
 
-              <h2 className="truncate text-lg font-semibold tracking-tight sm:text-xl">
+              <h2 className="truncate text-lg font-semibold tracking-tight text-white/90 sm:text-xl">
                 {repo.name}
               </h2>
             </div>
 
-            <Button
+            <button
               type="button"
-              variant="ghost"
-              size="icon"
               onClick={onClose}
-              className="h-8 w-8 shrink-0 rounded-full text-white/30 hover:bg-white/10 hover:text-white"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white/30 transition hover:bg-white/10 hover:text-white"
               aria-label="Close repository"
             >
               <X className="h-4 w-4" />
-            </Button>
+            </button>
           </div>
-        </CardHeader>
+        </div>
 
-        <CardContent className="space-y-4 px-4 pb-4 sm:space-y-5 sm:px-5 sm:pb-5">
-          <p className="text-xs leading-5 text-white/50 sm:text-sm sm:leading-6">
-            {repo.description}
-          </p>
-
-          <div className="flex flex-wrap gap-1.5 sm:gap-2">
-            <Badge
-              variant="secondary"
-              className="border border-white/10 bg-white/[0.05] text-white/70"
-            >
-              <Code2 className="mr-1.5 h-3 w-3" />
-              {repo.language || "Unknown"}
-            </Badge>
-
-            <Badge
-              variant="secondary"
-              className="border border-white/10 bg-white/[0.05] text-white/70"
-            >
-              <Star className="mr-1.5 h-3 w-3" />
-              {repo.stars ?? 0}
-            </Badge>
-
-            <Badge
-              variant="secondary"
-              className="border border-white/10 bg-white/[0.05] text-white/70"
-            >
-              <GitFork className="mr-1.5 h-3 w-3" />
-              {repo.forks ?? 0}
-            </Badge>
-          </div>
-
-          {repo.topics?.length > 0 && (
-            <>
-              <Separator className="bg-white/10" />
-
-              <div>
-                <p className="mb-2 text-[9px] font-semibold uppercase tracking-[0.2em] text-white/25">
-                  Topics
-                </p>
-
-                <div className="flex flex-wrap gap-1.5">
-                  {repo.topics.map((topic) => (
-                    <span
-                      key={topic}
-                      className="rounded-md border border-white/10 bg-white/[0.035] px-2 py-1 text-[10px] text-white/45"
-                    >
-                      {topic}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </>
+        {/* Content */}
+        <div className="px-4 pb-4 sm:px-5 sm:pb-5">
+          {/* Description */}
+          {repo.description ? (
+            <p className="text-xs leading-5 text-white/50 sm:text-sm sm:leading-6">
+              {repo.description}
+            </p>
+          ) : (
+            <p className="text-xs italic leading-5 text-white/25 sm:text-sm">
+              No description provided.
+            </p>
           )}
 
-          <Button
-            asChild
-            className="h-10 w-full rounded-lg bg-white text-black hover:bg-white/90"
+          {/* Metadata */}
+          <div className="mt-3.5 flex flex-wrap gap-1.5 sm:mt-4 sm:gap-2">
+            <MetaBadge
+              icon={
+                <Code2 className="h-3 w-3" />
+              }
+              value={repo.language || "Unknown"}
+            />
+
+            <MetaBadge
+              icon={
+                <Star className="h-3 w-3" />
+              }
+              value={repo.stars ?? 0}
+            />
+
+            <MetaBadge
+              icon={
+                <GitFork className="h-3 w-3" />
+              }
+              value={repo.forks ?? 0}
+            />
+          </div>
+
+          {/* Divider */}
+          <div className="my-4 h-px bg-white/7 sm:my-5" />
+
+          {/* Topics */}
+          {repo.topics?.length > 0 && (
+            <div>
+              <p className="mb-2.5 text-[9px] font-semibold uppercase tracking-[0.2em] text-white/25">
+                Topics
+              </p>
+
+              <div className="flex flex-wrap gap-1.5">
+                {repo.topics.map((topic) => (
+                  <span
+                    key={topic}
+                    className="rounded-lg border border-white/8 bg-white/[0.025] px-2 py-1 text-[10px] text-white/45"
+                  >
+                    {topic}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* GitHub action */}
+          <a
+            href={repo.githubUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.045] text-[10px] font-medium text-white/60 transition hover:border-white/15 hover:bg-white/[0.08] hover:text-white active:scale-[0.99] sm:mt-5"
           >
-            <a
-              href={repo.githubUrl}
-              target="_blank"
-              rel="noreferrer"
-            >
-              View on GitHub
-              <ExternalLink className="ml-2 h-3.5 w-3.5" />
-            </a>
-          </Button>
-        </CardContent>
-      </Card>
+            <span>View on GitHub</span>
+            <ExternalLink className="h-3.5 w-3.5" />
+          </a>
+        </div>
+      </div>
     </aside>
+  );
+}
+
+function MetaBadge({ icon, value }) {
+  return (
+    <span className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.05] px-2.5 text-[10px] font-medium text-white/65">
+      {icon}
+      {value}
+    </span>
   );
 }
 

@@ -1,7 +1,6 @@
 import { Html } from "@react-three/drei";
 import { useMemo, useState } from "react";
 import { Code2, Star } from "lucide-react";
-
 import { getRepositoryVisuals } from "../../lib/repositoryVisuals";
 
 function RepositoryNode({
@@ -18,13 +17,8 @@ function RepositoryNode({
   );
 
   const position = useMemo(() => {
-    /*
-     * Golden-angle distribution.
-     *
-     * This gives us a natural-looking spread without
-     * manually positioning every repository.
-     */
-    const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+    const goldenAngle =
+      Math.PI * (3 - Math.sqrt(5));
 
     const angle = index * goldenAngle;
 
@@ -48,27 +42,58 @@ function RepositoryNode({
     ? 0.35
     : 1;
 
+  const handlePointerOver = (event) => {
+    event.stopPropagation();
+
+    const pointerType =
+      event.nativeEvent?.pointerType;
+
+    if (pointerType === "touch") {
+      return;
+    }
+
+    setHovered(true);
+    document.body.style.cursor = "pointer";
+  };
+
+  const handlePointerOut = () => {
+    setHovered(false);
+    document.body.style.cursor = "default";
+  };
+
+  const handleSelect = (event) => {
+    event.stopPropagation();
+
+    setHovered(false);
+    document.body.style.cursor = "default";
+
+    onSelect(repo);
+  };
+
+  /*
+   * Only render an HTML label when it is actually
+   * useful to the user.
+   *
+   * This prevents hundreds of Drei <Html> elements
+   * from being mounted for large GitHub profiles.
+   */
+  const showLabel = hovered || selected;
+
   return (
     <group position={position}>
       {/* Atmospheric glow */}
       <mesh
         scale={scale}
-        onClick={(event) => {
-          event.stopPropagation();
-          onSelect(repo);
-        }}
-        onPointerOver={(event) => {
-          event.stopPropagation();
-          setHovered(true);
-          document.body.style.cursor = "pointer";
-        }}
-        onPointerOut={() => {
-          setHovered(false);
-          document.body.style.cursor = "default";
-        }}
+        onClick={handleSelect}
+        onPointerOver={handlePointerOver}
+        onPointerOut={handlePointerOut}
       >
         <sphereGeometry
-          args={[visual.size * 1.8, 32, 32]}
+          args={[
+            visual.size * 1.8,
+            24,
+            24,
+          ]}
         />
 
         <meshBasicMaterial
@@ -88,25 +113,15 @@ function RepositoryNode({
       {/* Planet */}
       <mesh
         scale={scale}
-        onClick={(event) => {
-          event.stopPropagation();
-          onSelect(repo);
-        }}
-        onPointerOver={(event) => {
-          event.stopPropagation();
-          setHovered(true);
-          document.body.style.cursor = "pointer";
-        }}
-        onPointerOut={() => {
-          setHovered(false);
-          document.body.style.cursor = "default";
-        }}
+        onClick={handleSelect}
+        onPointerOver={handlePointerOver}
+        onPointerOut={handlePointerOut}
       >
         <sphereGeometry
           args={[
             visual.size,
-            32,
-            32,
+            24,
+            24,
           ]}
         />
 
@@ -116,7 +131,8 @@ function RepositoryNode({
           emissiveIntensity={
             selected
               ? 1.5
-              : 0.35 + visual.activity * 0.45
+              : 0.35 +
+                visual.activity * 0.45
           }
           roughness={0.38}
           metalness={0.3}
@@ -127,13 +143,20 @@ function RepositoryNode({
 
       {/* Activity ring */}
       {visual.activity > 0.65 && (
-        <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <mesh
+          rotation={[
+            Math.PI / 2,
+            0,
+            0,
+          ]}
+        >
           <torusGeometry
             args={[
               visual.size * 1.45,
-              0.008 + visual.activity * 0.012,
+              0.008 +
+                visual.activity * 0.012,
               12,
-              64,
+              48,
             ]}
           />
 
@@ -153,13 +176,19 @@ function RepositoryNode({
 
       {/* Selected state */}
       {selected && (
-        <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <mesh
+          rotation={[
+            Math.PI / 2,
+            0,
+            0,
+          ]}
+        >
           <torusGeometry
             args={[
               visual.size * 1.75,
               0.018,
               16,
-              64,
+              48,
             ]}
           />
 
@@ -171,8 +200,8 @@ function RepositoryNode({
         </mesh>
       )}
 
-      {/* Label */}
-      {(hovered || selected) && (
+      {/* Interactive repository label */}
+      {showLabel && (
         <Html
           center
           distanceFactor={8}
@@ -181,25 +210,34 @@ function RepositoryNode({
             visual.size + 0.35,
             0,
           ]}
+          zIndexRange={[10, 10]}
           style={{
             pointerEvents: "none",
             userSelect: "none",
           }}
         >
-          <div className="whitespace-nowrap rounded-full border border-white/10 bg-black/65 px-3 py-1.5 text-white/80 shadow-2xl backdrop-blur-xl">
-            <div className="flex items-center gap-2">
+          <div
+            className={[
+              "whitespace-nowrap rounded-full",
+              "border border-white/10",
+              "bg-black/70 px-3 py-1.5",
+              "shadow-2xl shadow-black/40",
+              "backdrop-blur-xl",
+            ].join(" ")}
+          >
+            <div className="flex items-center gap-1.5">
               {repo.stars > 0 ? (
-                <Star className="h-3 w-3 fill-current text-white/60" />
+                <Star className="h-2.5 w-2.5 fill-current text-white/50" />
               ) : (
-                <Code2 className="h-3 w-3 text-white/35" />
+                <Code2 className="h-2.5 w-2.5 text-white/30" />
               )}
 
-              <span className="text-[11px] font-medium">
+              <span className="text-[10px] font-medium text-white/75">
                 {repo.name}
               </span>
 
               {repo.language && (
-                <span className="text-[9px] text-white/30">
+                <span className="text-[8px] text-white/30">
                   {repo.language}
                 </span>
               )}

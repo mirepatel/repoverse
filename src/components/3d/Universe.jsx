@@ -1,25 +1,40 @@
 import { Canvas } from "@react-three/fiber";
-
 import {
   Float,
   OrbitControls,
   PerspectiveCamera,
   Stars,
 } from "@react-three/drei";
+import * as THREE from "three";
 
 import RepositoryNode from "./RepositoryNode";
 
-function Universe({ repositories, selectedRepo, onSelect }) {
+function Universe({
+  repositories,
+  selectedRepo,
+  onSelect,
+}) {
   return (
     <div className="absolute inset-0">
       <Canvas
-        dpr={[1, 2]}
+        dpr={[1, 1.5]}
         gl={{
           antialias: true,
           powerPreference: "high-performance",
         }}
+        style={{
+          touchAction: "none",
+        }}
+        onPointerMissed={() => {
+          if (selectedRepo) {
+            onSelect(null);
+          }
+        }}
       >
-        <color attach="background" args={["#030305"]} />
+        <color
+          attach="background"
+          args={["#030305"]}
+        />
 
         <fog
           attach="fog"
@@ -49,7 +64,7 @@ function Universe({ repositories, selectedRepo, onSelect }) {
         <Stars
           radius={70}
           depth={45}
-          count={2500}
+          count={1800}
           factor={1.7}
           saturation={0}
           fade
@@ -63,9 +78,7 @@ function Universe({ repositories, selectedRepo, onSelect }) {
           floatIntensity={0.12}
         >
           <mesh>
-            <sphereGeometry
-              args={[0.45, 32, 32]}
-            />
+            <sphereGeometry args={[0.45, 24, 24]} />
 
             <meshStandardMaterial
               color="#332b68"
@@ -82,7 +95,9 @@ function Universe({ repositories, selectedRepo, onSelect }) {
             key={repo.id}
             repo={repo}
             index={index}
-            selected={selectedRepo?.id === repo.id}
+            selected={
+              selectedRepo?.id === repo.id
+            }
             onSelect={onSelect}
           />
         ))}
@@ -91,15 +106,19 @@ function Universe({ repositories, selectedRepo, onSelect }) {
           makeDefault
           enableDamping
           dampingFactor={0.07}
-          enablePan
+          enableRotate
+          enablePan={false}
           enableZoom
           rotateSpeed={0.45}
           zoomSpeed={0.7}
-          panSpeed={0.45}
           minDistance={5}
           maxDistance={24}
           minPolarAngle={Math.PI * 0.18}
           maxPolarAngle={Math.PI * 0.82}
+          touches={{
+            ONE: THREE.TOUCH.ROTATE,
+            TWO: THREE.TOUCH.DOLLY_PAN,
+          }}
         />
       </Canvas>
     </div>
