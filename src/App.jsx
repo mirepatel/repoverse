@@ -14,7 +14,10 @@ import ProfilePopover from "./components/ProfilePopover";
 import LandingHero from "./components/landing/LandingHero";
 
 function getUsernameFromPath() {
-  const path = window.location.pathname.replace(/^\/+|\/+$/g, "");
+  const path = window.location.pathname.replace(
+    /^\/+|\/+$/g,
+    ""
+  );
 
   if (!path) {
     return "";
@@ -29,8 +32,10 @@ function App() {
   );
 
   const [profile, setProfile] = useState(null);
-  const [selectedRepo, setSelectedRepo] = useState(null);
-  const [profileOpen, setProfileOpen] = useState(false);
+  const [selectedRepo, setSelectedRepo] =
+    useState(null);
+  const [profileOpen, setProfileOpen] =
+    useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
@@ -48,8 +53,64 @@ function App() {
     document.title = "Repoverse | GitHub in 3D";
   }, [profile]);
 
+  /*
+   * SEARCH KEYBOARD SHORTCUT
+   *
+   * "/" or Cmd/Ctrl + K focuses the GitHub
+   * username search field on the landing page.
+   */
+
+  useEffect(() => {
+    if (profile) {
+      return;
+    }
+
+    const handleSearchShortcut = (event) => {
+      const target = event.target;
+
+      const isTyping =
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement ||
+        target?.isContentEditable;
+
+      const isSlashShortcut =
+        event.key === "/" && !isTyping;
+
+      const isCommandK =
+        event.key.toLowerCase() === "k" &&
+        (event.metaKey || event.ctrlKey);
+
+      if (!isSlashShortcut && !isCommandK) {
+        return;
+      }
+
+      event.preventDefault();
+
+      const searchInput = document.getElementById(
+        "github-username-search"
+      );
+
+      searchInput?.focus();
+    };
+
+    window.addEventListener(
+      "keydown",
+      handleSearchShortcut
+    );
+
+    return () => {
+      window.removeEventListener(
+        "keydown",
+        handleSearchShortcut
+      );
+    };
+  }, [profile]);
+
   const loadProfile = useCallback(async (value) => {
-    const cleanUsername = value.trim().replace(/^@/, "");
+    const cleanUsername = value
+      .trim()
+      .replace(/^@/, "");
 
     if (!cleanUsername) {
       setProfile(null);
@@ -63,13 +124,16 @@ function App() {
     setProfileOpen(false);
 
     try {
-      const data = await getGitHubProfile(cleanUsername);
+      const data =
+        await getGitHubProfile(cleanUsername);
 
       setProfile(data);
       setUsername(data.user.login);
     } catch (err) {
       setProfile(null);
-      setError(err.message || "Something went wrong.");
+      setError(
+        err.message || "Something went wrong."
+      );
     } finally {
       setLoading(false);
     }
@@ -102,7 +166,8 @@ function App() {
 
           setProfile(null);
           setError(
-            err.message || "Something went wrong."
+            err.message ||
+              "Something went wrong."
           );
         } finally {
           if (!cancelled) {
@@ -119,7 +184,8 @@ function App() {
     }
 
     const handlePopState = () => {
-      const pathUsername = getUsernameFromPath();
+      const pathUsername =
+        getUsernameFromPath();
 
       setError("");
       setSelectedRepo(null);
@@ -149,7 +215,9 @@ function App() {
     };
   }, [loadProfile]);
 
-  const handleExplore = async (eventOrUsername) => {
+  const handleExplore = async (
+    eventOrUsername
+  ) => {
     if (typeof eventOrUsername !== "string") {
       eventOrUsername.preventDefault();
     }
@@ -172,13 +240,21 @@ function App() {
       cleanUsername
     )}`;
 
-    window.history.pushState({}, "", nextPath);
+    window.history.pushState(
+      {},
+      "",
+      nextPath
+    );
 
     await loadProfile(cleanUsername);
   };
 
   const handleReset = () => {
-    window.history.pushState({}, "", "/");
+    window.history.pushState(
+      {},
+      "",
+      "/"
+    );
 
     setProfile(null);
     setSelectedRepo(null);
@@ -190,7 +266,8 @@ function App() {
   };
 
   const handleShare = async () => {
-    const shareUrl = window.location.href;
+    const shareUrl =
+      window.location.href;
 
     try {
       if (navigator.share) {
@@ -203,7 +280,9 @@ function App() {
         return;
       }
 
-      await navigator.clipboard.writeText(shareUrl);
+      await navigator.clipboard.writeText(
+        shareUrl
+      );
 
       setCopied(true);
 
@@ -217,12 +296,15 @@ function App() {
 
       try {
         const textArea =
-          document.createElement("textarea");
+          document.createElement(
+            "textarea"
+          );
 
         textArea.value = shareUrl;
         textArea.style.position = "fixed";
         textArea.style.opacity = "0";
-        textArea.style.pointerEvents = "none";
+        textArea.style.pointerEvents =
+          "none";
 
         document.body.appendChild(textArea);
 
@@ -230,7 +312,9 @@ function App() {
         textArea.select();
 
         document.execCommand("copy");
-        document.body.removeChild(textArea);
+        document.body.removeChild(
+          textArea
+        );
 
         setCopied(true);
 
@@ -238,7 +322,9 @@ function App() {
           setCopied(false);
         }, 1800);
       } catch {
-        setError("Unable to copy the share link.");
+        setError(
+          "Unable to copy the share link."
+        );
       }
     }
   };
@@ -268,10 +354,12 @@ function App() {
       )
   );
 
-  const totalStars = profile.repositories.reduce(
-    (total, repo) => total + (repo.stars || 0),
-    0
-  );
+  const totalStars =
+    profile.repositories.reduce(
+      (total, repo) =>
+        total + (repo.stars || 0),
+      0
+    );
 
   /*
    * REPOVERSE EXPERIENCE
@@ -355,7 +443,9 @@ function App() {
           <button
             type="button"
             onClick={() =>
-              setProfileOpen((open) => !open)
+              setProfileOpen(
+                (open) => !open
+              )
             }
             aria-expanded={profileOpen}
             aria-label="Open profile"
@@ -439,7 +529,9 @@ function App() {
       {/* Repository panel */}
       <RepoPanel
         repo={selectedRepo}
-        onClose={() => setSelectedRepo(null)}
+        onClose={() =>
+          setSelectedRepo(null)
+        }
       />
     </main>
   );

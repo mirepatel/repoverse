@@ -85,12 +85,17 @@ function LandingHero({
             <Search className="ml-3 h-4 w-4 shrink-0 text-white/25" />
 
             <input
+              id="github-username-search"
               value={username}
-              onChange={(event) => setUsername(event.target.value)}
+              onChange={(event) =>
+                setUsername(event.target.value)
+              }
               placeholder="Search a GitHub username..."
               className="min-w-0 flex-1 bg-transparent px-3 text-sm text-white outline-none placeholder:text-white/25"
               disabled={loading}
               aria-label="GitHub username"
+              autoComplete="off"
+              enterKeyHint="go"
             />
 
             <button
@@ -101,11 +106,13 @@ function LandingHero({
               {loading ? (
                 <>
                   <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
+
                   <span>Exploring</span>
                 </>
               ) : (
                 <>
                   <span>Explore</span>
+
                   <ArrowRight className="h-3.5 w-3.5" />
                 </>
               )}
