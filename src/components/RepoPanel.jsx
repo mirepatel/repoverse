@@ -1,15 +1,4 @@
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
-
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-
-import {
-  ArrowUpRight,
   Code2,
   ExternalLink,
   GitFork,
@@ -21,103 +10,114 @@ function RepoPanel({ repo, onClose }) {
   if (!repo) return null;
 
   return (
-    <aside
-      className="
-        absolute right-6 top-20 z-30
-        w-[380px] max-w-[calc(100vw-3rem)]
-        animate-in fade-in slide-in-from-right-4
-        duration-300
-      "
-    >
-      <Card className="overflow-hidden border-white/10 bg-[#09090e]/90 text-white shadow-[0_24px_100px_rgba(0,0,0,0.55)] backdrop-blur-2xl">
-        {/* Accent */}
-        <div className="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+    <aside className="absolute inset-x-3 bottom-3 z-30 sm:inset-x-auto sm:right-5 sm:top-20 sm:bottom-auto sm:w-[min(380px,calc(100%-40px))] md:right-7 md:top-24">
+      <div className="max-h-[72svh] overflow-y-auto rounded-2xl border border-white/10 bg-[#09090c]/95 text-white shadow-2xl shadow-black/60 backdrop-blur-2xl sm:max-h-[calc(100svh-7rem)]">
+        {/* Header */}
+        <div className="px-4 pt-4 pb-3 sm:px-5 sm:pt-5 sm:pb-3.5">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0">
+              <p className="mb-1.5 text-[9px] font-semibold uppercase tracking-[0.25em] text-white/30">
+                Repository
+              </p>
 
-        <CardHeader className="pb-4">
-          <div className="flex items-start justify-between gap-5">
-            <div className="flex min-w-0 items-start gap-3">
-              <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
-                <Code2 className="size-[18px] text-white/60" />
-              </div>
-
-              <div className="min-w-0">
-                <p className="text-[9px] font-medium uppercase tracking-[0.2em] text-white/30">
-                  Repository
-                </p>
-
-                <CardTitle className="mt-1 truncate text-xl tracking-tight">
-                  {repo.name}
-                </CardTitle>
-              </div>
+              <h2 className="truncate text-lg font-semibold tracking-tight text-white/90 sm:text-xl">
+                {repo.name}
+              </h2>
             </div>
 
-            <Button
-              variant="ghost"
-              size="icon"
+            <button
+              type="button"
               onClick={onClose}
-              aria-label="Close repository details"
-              className="size-8 shrink-0 rounded-full text-white/30 hover:bg-white/10 hover:text-white"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white/30 transition hover:bg-white/10 hover:text-white"
+              aria-label="Close repository"
             >
-              <X className="size-4" />
-            </Button>
+              <X className="h-4 w-4" />
+            </button>
           </div>
-        </CardHeader>
+        </div>
 
-        <CardContent className="space-y-6">
+        {/* Content */}
+        <div className="px-4 pb-4 sm:px-5 sm:pb-5">
           {/* Description */}
-          <p className="text-[13px] leading-6 text-white/50">
-            {repo.description}
-          </p>
+          {repo.description ? (
+            <p className="text-xs leading-5 text-white/50 sm:text-sm sm:leading-6">
+              {repo.description}
+            </p>
+          ) : (
+            <p className="text-xs italic leading-5 text-white/25 sm:text-sm">
+              No description provided.
+            </p>
+          )}
 
           {/* Metadata */}
-          <div className="flex items-center gap-2">
-            <Badge
-              variant="secondary"
-              className="border-white/10 bg-white/[0.06] text-white/60"
-            >
-              {repo.language}
-            </Badge>
+          <div className="mt-3.5 flex flex-wrap gap-1.5 sm:mt-4 sm:gap-2">
+            <MetaBadge
+              icon={
+                <Code2 className="h-3 w-3" />
+              }
+              value={repo.language || "Unknown"}
+            />
 
-            <div className="flex items-center gap-1.5 text-[11px] text-white/35">
-              <Star className="size-3" />
-              {repo.stars}
-            </div>
+            <MetaBadge
+              icon={
+                <Star className="h-3 w-3" />
+              }
+              value={repo.stars ?? 0}
+            />
 
-            <div className="flex items-center gap-1.5 text-[11px] text-white/35">
-              <GitFork className="size-3" />
-              {repo.forks}
-            </div>
+            <MetaBadge
+              icon={
+                <GitFork className="h-3 w-3" />
+              }
+              value={repo.forks ?? 0}
+            />
           </div>
 
           {/* Divider */}
-          <div className="h-px bg-white/[0.07]" />
+          <div className="my-4 h-px bg-white/7 sm:my-5" />
 
-          {/* Repository action */}
-          <Button
-            className="
-              h-10 w-full justify-between
-              rounded-xl
-              bg-white text-black
-              hover:bg-white/90
-            "
-            onClick={() =>
-              window.open(
-                repo.githubUrl,
-                "_blank",
-                "noopener,noreferrer"
-              )
-            }
+          {/* Topics */}
+          {repo.topics?.length > 0 && (
+            <div>
+              <p className="mb-2.5 text-[9px] font-semibold uppercase tracking-[0.2em] text-white/25">
+                Topics
+              </p>
+
+              <div className="flex flex-wrap gap-1.5">
+                {repo.topics.map((topic) => (
+                  <span
+                    key={topic}
+                    className="rounded-lg border border-white/8 bg-white/[0.025] px-2 py-1 text-[10px] text-white/45"
+                  >
+                    {topic}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* GitHub action */}
+          <a
+            href={repo.githubUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.045] text-[10px] font-medium text-white/60 transition hover:border-white/15 hover:bg-white/[0.08] hover:text-white active:scale-[0.99] sm:mt-5"
           >
-            <span className="flex items-center gap-2">
-              View on GitHub
-              <ArrowUpRight className="size-3.5" />
-            </span>
-
-            <ExternalLink className="size-3.5 opacity-40" />
-          </Button>
-        </CardContent>
-      </Card>
+            <span>View on GitHub</span>
+            <ExternalLink className="h-3.5 w-3.5" />
+          </a>
+        </div>
+      </div>
     </aside>
+  );
+}
+
+function MetaBadge({ icon, value }) {
+  return (
+    <span className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.05] px-2.5 text-[10px] font-medium text-white/65">
+      {icon}
+      {value}
+    </span>
   );
 }
 

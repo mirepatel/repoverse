@@ -8,9 +8,8 @@ const repositories = [
     stars: 0,
     forks: 0,
     githubUrl: "https://github.com/mirepatel/repoverse",
-    position: [0, 0.8, 0],
-    rotation: [0, -0.08, 0],
     featured: true,
+    topics: ["React", "Three.js", "3D", "GitHub"],
   },
 
   {
@@ -22,8 +21,7 @@ const repositories = [
     stars: 0,
     forks: 0,
     githubUrl: "https://github.com/mirepatel/QuiQR",
-    position: [-3.8, 1.8, -1.5],
-    rotation: [0.02, 0.12, -0.025],
+    topics: ["React", "TypeScript", "QR"],
   },
 
   {
@@ -35,8 +33,7 @@ const repositories = [
     stars: 0,
     forks: 0,
     githubUrl: "https://github.com/mirepatel/NetSpeee",
-    position: [3.8, 1.5, -2.5],
-    rotation: [-0.02, -0.12, 0.025],
+    topics: ["React", "Vite", "Network"],
   },
 
   {
@@ -48,8 +45,7 @@ const repositories = [
     stars: 0,
     forks: 0,
     githubUrl: "https://github.com/mirepatel/GiphyGIFer",
-    position: [0.8, -2.2, -3.8],
-    rotation: [0.025, -0.04, 0.02],
+    topics: ["Next.js", "GIPHY", "Firebase"],
   },
 ];
 
