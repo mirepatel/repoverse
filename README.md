@@ -14,7 +14,7 @@ An interactive 3D GitHub repository explorer built with React and Three.js. Tran
 
 ```text
 <p align="center">
-  <img src="./repoverse-screenshot.png" alt="Repoverse Interface" width="600" style="border-radius: 8px;"/>
+  <img src="./public/repoverse-screenshot.png" alt="Repoverse Interface" width="600" style="border-radius: 8px;"/>
 </p>
 ```
 
@@ -34,13 +34,13 @@ The experience combines data-driven visual systems with a minimal interface, all
 
 ## ✦ Features
 
-🌱 **3D Repository Universe** • Visualize public GitHub repositories as interactive planets distributed throughout a dynamic 3D space.
-🌱 **Data-Driven Visuals** • Repository language, activity, popularity, and archived status influence planetary appearance and behavior.
-🌱 **Interactive Exploration** • Rotate, zoom, and navigate through the universe to discover repositories in an immersive spatial environment.
-🌱 **Repository Search** • Quickly find repositories by name, description, language, or topic with keyboard shortcut support.
-🌱 **Repository Insights** • Select any planet to reveal focused repository information including stars, forks, language, topics, and GitHub links.
-🌱 **Profile Exploration** • Explore public GitHub profiles with profile statistics, repository counts, followers, languages, and total stars.
-🌱 **Shareable Universes** • Every explored GitHub profile has its own shareable URL for directly revisiting or sharing a repository universe.
+🌱 **3D Repository Universe** • Visualize public GitHub repositories as interactive planets distributed throughout a dynamic 3D space.  
+🌱 **Data-Driven Visuals** • Repository language, activity, popularity, and archived status influence planetary appearance and behavior.  
+🌱 **Interactive Exploration** • Rotate, zoom, and navigate through the universe to discover repositories in an immersive spatial environment.  
+🌱 **Repository Search** • Quickly find repositories by name, description, language, or topic with keyboard shortcut support.  
+🌱 **Repository Insights** • Select any planet to reveal focused repository information including stars, forks, language, topics, and GitHub links.  
+🌱 **Profile Exploration** • Explore public GitHub profiles with profile statistics, repository counts, followers, languages, and total stars.  
+🌱 **Shareable Universes** • Every explored GitHub profile has its own shareable URL for directly revisiting or sharing a repository universe.  
 
 ₊⊹
 
