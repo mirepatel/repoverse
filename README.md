@@ -12,11 +12,9 @@ An interactive 3D GitHub repository explorer built with React and Three.js. Tran
 
 ## ✦ Preview
 
-```text
 <p align="center">
   <img src="./public/repoverse-screenshot.png" alt="Repoverse Interface" width="600" style="border-radius: 8px;"/>
 </p>
-```
 
 ₊⊹
 
