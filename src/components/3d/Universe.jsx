@@ -9,6 +9,7 @@ import * as THREE from "three";
 
 import RepositoryNode from "./RepositoryNode";
 import UniverseCore from "./UniverseCore";
+import ExplorationRocket from "./ExplorationRocket";
 
 function RepositoryField({
   repositories,
@@ -24,9 +25,7 @@ function RepositoryField({
       return;
     }
 
-    const targetSpeed = isInteracting
-      ? 0
-      : 0.02;
+    const targetSpeed = isInteracting ? 0 : 0.02;
 
     currentSpeed.current = THREE.MathUtils.damp(
       currentSpeed.current,
@@ -46,9 +45,7 @@ function RepositoryField({
           key={repo.id}
           repo={repo}
           index={index}
-          selected={
-            selectedRepo?.id === repo.id
-          }
+          selected={selectedRepo?.id === repo.id}
           onSelect={onSelect}
         />
       ))}
@@ -60,14 +57,35 @@ function UniverseScene({
   repositories,
   selectedRepo,
   onSelect,
+  isExploreMode,
+  cameraRef,
 }) {
   const [isInteracting, setIsInteracting] =
     useState(false);
+
+  useFrame((_, delta) => {
+    if (!cameraRef.current) {
+      return;
+    }
+
+    const targetZ = isExploreMode ? 9.5 : 12;
+
+    cameraRef.current.position.z =
+      THREE.MathUtils.damp(
+        cameraRef.current.position.z,
+        targetZ,
+        3,
+        delta
+      );
+  });
 
   return (
     <>
       {/* Universe core */}
       <UniverseCore />
+
+      {/* Exploration rocket */}
+      {isExploreMode && <ExplorationRocket />}
 
       {/* Repository orbital field */}
       <RepositoryField
@@ -105,7 +123,10 @@ function Universe({
   repositories,
   selectedRepo,
   onSelect,
+  isExploreMode,
 }) {
+  const cameraRef = useRef();
+
   return (
     <div className="absolute inset-0">
       <Canvas
@@ -134,6 +155,7 @@ function Universe({
         />
 
         <PerspectiveCamera
+          ref={cameraRef}
           makeDefault
           position={[0, 1.5, 12]}
           fov={48}
@@ -167,6 +189,8 @@ function Universe({
           repositories={repositories}
           selectedRepo={selectedRepo}
           onSelect={onSelect}
+          isExploreMode={isExploreMode}
+          cameraRef={cameraRef}
         />
       </Canvas>
     </div>

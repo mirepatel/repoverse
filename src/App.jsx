@@ -209,9 +209,12 @@ function App() {
   const [profileOpen, setProfileOpen] =
     useState(false);
 
-  const [loading, setLoading] =
+  const [isExploreMode, setIsExploreMode] =
     useState(false);
 
+  const [loading, setLoading] =
+    useState(false);    
+  
   const [error, setError] =
     useState("");
 
@@ -782,7 +785,8 @@ function App() {
         }
         selectedRepo={selectedRepo}
         onSelect={setSelectedRepo}
-      />
+        isExploreMode={isExploreMode}
+      />      
 
       {/* Atmospheric overlay */}
       <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(circle_at_50%_45%,transparent_0%,transparent_45%,rgba(0,0,0,0.45)_100%)]" />
@@ -1013,6 +1017,25 @@ function App() {
         </h2>
       </div>
 
+      {/* Explore mode */}
+      <button
+        type="button"
+        onClick={() =>
+          setIsExploreMode(
+            (active) => !active
+          )
+        }
+        aria-pressed={isExploreMode}
+        className="absolute bottom-14 left-1/2 z-20 -translate-x-1/2 rounded-full border border-white/10 bg-black/35 px-4 py-2 text-[10px] font-medium tracking-wide text-white/55 backdrop-blur-xl transition hover:border-white/20 hover:bg-white/[0.06] hover:text-white active:scale-[0.97] md:bottom-16"
+      >
+        <span className="mr-1.5">
+          ✦
+        </span>
+        {isExploreMode
+          ? "Exploring"
+          : "Explore"}
+      </button>
+      
       {/* Navigation hint */}
       <div className="pointer-events-none absolute bottom-4 left-1/2 z-10 hidden -translate-x-1/2 md:bottom-6 md:block">
         <div className="rounded-full border border-white/10 bg-black/30 px-4 py-2 text-[9px] font-medium tracking-wide text-white/25 backdrop-blur-xl">
