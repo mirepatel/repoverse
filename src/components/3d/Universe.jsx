@@ -8,6 +8,7 @@ import {
 import * as THREE from "three";
 
 import RepositoryNode from "./RepositoryNode";
+import UniverseCore from "./UniverseCore";
 
 function Universe({
   repositories,
@@ -71,24 +72,8 @@ function Universe({
           speed={0.25}
         />
 
-        {/* Central light source */}
-        <Float
-          speed={0.7}
-          rotationIntensity={0.05}
-          floatIntensity={0.12}
-        >
-          <mesh>
-            <sphereGeometry args={[0.45, 24, 24]} />
-
-            <meshStandardMaterial
-              color="#332b68"
-              emissive="#6757ff"
-              emissiveIntensity={1.2}
-              roughness={0.35}
-              metalness={0.45}
-            />
-          </mesh>
-        </Float>
+        {/* Universe core */}
+        <UniverseCore />        
 
         {repositories.map((repo, index) => (
           <RepositoryNode
