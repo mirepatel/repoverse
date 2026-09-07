@@ -13,7 +13,11 @@ import {
   X,
 } from "lucide-react";
 
-import { getGitHubProfile } from "./lib/github";
+import {
+  getGitHubProfile,
+  normalizeUsername,
+} from "./lib/github";
+
 import {
   getRepositoryPriority,
 } from "./lib/repositoryVisuals";
@@ -415,14 +419,17 @@ function App() {
   const loadProfile =
     useCallback(
       async (value) => {
-        const cleanUsername =
-          value
-            .trim()
-            .replace(/^@/, "");
+        let cleanUsername;
 
-        if (!cleanUsername) {
+        try {
+          cleanUsername =
+            normalizeUsername(value);
+        } catch (err) {
           setProfile(null);
-          setError("");
+          setError(
+            err.message ||
+              "Please enter a valid GitHub username."
+          );
           return;
         }
 
@@ -469,10 +476,26 @@ function App() {
 
       const loadInitialProfile =
         async () => {
-          const cleanUsername =
-            initialUsername
-              .trim()
-              .replace(/^@/, "");
+          let cleanUsername;
+
+          try {
+            cleanUsername =
+              normalizeUsername(
+                initialUsername
+              );
+          } catch (err) {
+            if (cancelled) {
+              return;
+            }
+
+            setProfile(null);
+            setError(
+              err.message ||
+                "Please enter a valid GitHub username."
+            );
+            setLoading(false);
+            return;
+          }
 
           setLoading(true);
           setError("");
@@ -571,14 +594,15 @@ function App() {
         ? eventOrUsername
         : username;
 
-    const cleanUsername =
-      value
-        .trim()
-        .replace(/^@/, "");
+    let cleanUsername;
 
-    if (!cleanUsername) {
+    try {
+      cleanUsername =
+        normalizeUsername(value);
+    } catch (err) {
       setError(
-        "Enter a GitHub username."
+        err.message ||
+          "Please enter a valid GitHub username."
       );
       return;
     }
@@ -856,9 +880,13 @@ function App() {
           {profileOpen && (
             <ProfilePopover
               profile={profile}
-              onClose={() =>
-                setProfileOpen(false)
-              }
+              onClose={() => setProfileOpen(false)}
+              onExplore={(nextUsername) => {
+                setProfileOpen(false);
+                handleExplore(nextUsername);
+              }}
+              loading={loading}
+              error={error}
             />
           )}
         </div>

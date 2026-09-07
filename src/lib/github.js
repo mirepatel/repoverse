@@ -30,7 +30,7 @@ async function githubRequest(endpoint) {
   return response.json();
 }
 
-function normalizeUsername(username) {
+export function normalizeUsername(username) {
   let cleanUsername = username.trim();
 
   if (!cleanUsername) {
