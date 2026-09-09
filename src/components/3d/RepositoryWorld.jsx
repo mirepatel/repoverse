@@ -1,5 +1,12 @@
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, PerspectiveCamera, Stars } from "@react-three/drei";
+
+import {
+  OrbitControls,
+  PerspectiveCamera,
+  Stars,
+  Torus,
+} from "@react-three/drei";
+
 import * as THREE from "three";
 
 import { getRepositoryVisuals } from "../../lib/repositoryVisuals";
@@ -63,6 +70,20 @@ function RepositoryWorldScene({ repo }) {
         />
       </mesh>
 
+      {/* Orbital ring */}
+      <Torus
+        args={[1.95, 0.012, 16, 96]}
+        rotation={[Math.PI / 2, 0, 0]}
+      >
+        <meshBasicMaterial
+          color={visuals.glow}
+          transparent
+          opacity={0.22}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+        />
+      </Torus>
+      
       <OrbitControls
         makeDefault
         enableDamping
