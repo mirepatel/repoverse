@@ -26,6 +26,7 @@ import Universe from "./components/3d/Universe";
 import RepoPanel from "./components/RepoPanel";
 import ProfilePopover from "./components/ProfilePopover";
 import LandingHero from "./components/landing/LandingHero";
+import RepositoryWorld from "./components/3d/RepositoryWorld";
 
 const MAX_VISIBLE_REPOSITORIES = 120;
 
@@ -211,6 +212,9 @@ function App() {
 
   const [isExploreMode, setIsExploreMode] =
     useState(false);
+
+  const [repositoryWorld, setRepositoryWorld] =
+    useState(null);
 
   const [loading, setLoading] =
     useState(false);    
@@ -776,6 +780,17 @@ function App() {
   /*
    * REPOVERSE EXPERIENCE
    */
+  if (repositoryWorld) {
+    return (
+      <RepositoryWorld
+        repo={repositoryWorld}
+        onBack={() => {
+          setRepositoryWorld(null);
+          setSelectedRepo(null);
+        }}
+      />
+    );
+  }
 
   return (
     <main className="relative h-[100svh] w-full overflow-hidden bg-[#030305] text-white">
@@ -1047,9 +1062,12 @@ function App() {
       {/* Repository panel */}
       <RepoPanel
         repo={selectedRepo}
-        onClose={() =>
-          setSelectedRepo(null)
-        }
+        onClose={() => {
+          setSelectedRepo(null);
+        }}
+        onExplore={(repo) => {
+          setRepositoryWorld(repo);
+        }}
       />
     </main>
   );

@@ -58,26 +58,9 @@ function UniverseScene({
   selectedRepo,
   onSelect,
   isExploreMode,
-  cameraRef,
 }) {
   const [isInteracting, setIsInteracting] =
     useState(false);
-
-  useFrame((_, delta) => {
-    if (!cameraRef.current) {
-      return;
-    }
-
-    const targetZ = isExploreMode ? 9.5 : 12;
-
-    cameraRef.current.position.z =
-      THREE.MathUtils.damp(
-        cameraRef.current.position.z,
-        targetZ,
-        3,
-        delta
-      );
-  });
 
   return (
     <>
@@ -190,7 +173,6 @@ function Universe({
           selectedRepo={selectedRepo}
           onSelect={onSelect}
           isExploreMode={isExploreMode}
-          cameraRef={cameraRef}
         />
       </Canvas>
     </div>

@@ -6,17 +6,25 @@ function ExplorationRocket() {
   const groupRef = useRef();
 
   useFrame((state) => {
-    if (!groupRef.current) {
-      return;
-    }
+  if (!groupRef.current) {
+    return;
+  }
 
-    const time = state.clock.elapsedTime;
+  const time = state.clock.elapsedTime;
 
-    groupRef.current.position.y =
-      Math.sin(time * 0.8) * 0.08;
+  // Subtle flight motion
+  groupRef.current.position.y =
+    Math.sin(time * 0.8) * 0.08;
 
-    groupRef.current.rotation.z =
-      Math.sin(time * 0.5) * 0.035;
+  groupRef.current.position.x =
+    Math.sin(time * 0.35) * 0.035;
+
+  // Very slight course correction
+  groupRef.current.rotation.z =
+    Math.sin(time * 0.5) * 0.035;
+
+  groupRef.current.rotation.x =
+    Math.sin(time * 0.3) * 0.02;
   });
 
   return (

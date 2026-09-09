@@ -6,7 +6,7 @@ import {
   X,
 } from "lucide-react";
 
-function RepoPanel({ repo, onClose }) {
+function RepoPanel({ repo, onClose, onExplore }) {
   if (!repo) return null;
 
   return (
@@ -96,12 +96,22 @@ function RepoPanel({ repo, onClose }) {
             </div>
           )}
 
+          {/* Repository exploration */}
+          <button
+            type="button"
+            onClick={() => onExplore(repo)}
+            className="mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-violet-400/10 bg-violet-400/[0.06] text-[10px] font-medium text-violet-200/70 transition hover:border-violet-400/20 hover:bg-violet-400/[0.1] hover:text-violet-200 active:scale-[0.99] sm:mt-5"
+          >
+            <span>Explore repository</span>
+            <span className="text-violet-300/50">→</span>
+          </button>
+
           {/* GitHub action */}
           <a
             href={repo.githubUrl}
             target="_blank"
             rel="noreferrer"
-            className="mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.045] text-[10px] font-medium text-white/60 transition hover:border-white/15 hover:bg-white/[0.08] hover:text-white active:scale-[0.99] sm:mt-5"
+            className="mt-2.5 flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.045] text-[10px] font-medium text-white/60 transition hover:border-white/15 hover:bg-white/[0.08] hover:text-white active:scale-[0.99]"
           >
             <span>View on GitHub</span>
             <ExternalLink className="h-3.5 w-3.5" />
