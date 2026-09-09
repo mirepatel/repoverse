@@ -122,10 +122,11 @@ function RepositoryWorld({ repo, onBack }) {
       <button
         type="button"
         onClick={onBack}
-        className="absolute left-4 top-4 z-20 flex h-9 items-center gap-2 rounded-full border border-white/10 bg-black/30 px-3.5 text-[10px] font-medium text-white/50 backdrop-blur-xl transition hover:border-white/15 hover:bg-white/[0.06] hover:text-white active:scale-[0.98] sm:left-6 sm:top-6"
+        aria-label="Back to universe"
+        className="absolute left-4 top-4 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-black/30 text-sm font-medium text-white/50 backdrop-blur-xl transition hover:border-white/15 hover:bg-white/[0.06] hover:text-white active:scale-[0.98] sm:left-6 sm:top-6 sm:w-auto sm:gap-2 sm:px-3.5 sm:text-[10px]"
       >
         <span>←</span>
-        Back to universe
+        <span className="hidden sm:inline">Back to universe</span>
       </button>
 
       <div className="pointer-events-none absolute inset-x-0 top-8 z-10 text-center sm:top-10">
