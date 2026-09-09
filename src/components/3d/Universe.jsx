@@ -1,6 +1,6 @@
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { useRef, useState } from "react";
 import {
-  Float,
   OrbitControls,
   PerspectiveCamera,
   Stars,
@@ -8,12 +8,108 @@ import {
 import * as THREE from "three";
 
 import RepositoryNode from "./RepositoryNode";
+import UniverseCore from "./UniverseCore";
+import ExplorationRocket from "./ExplorationRocket";
+
+function RepositoryField({
+  repositories,
+  selectedRepo,
+  onSelect,
+  isInteracting,
+}) {
+  const groupRef = useRef();
+  const currentSpeed = useRef(0.02);
+
+  useFrame((_, delta) => {
+    if (!groupRef.current) {
+      return;
+    }
+
+    const targetSpeed = isInteracting ? 0 : 0.02;
+
+    currentSpeed.current = THREE.MathUtils.damp(
+      currentSpeed.current,
+      targetSpeed,
+      4,
+      delta
+    );
+
+    groupRef.current.rotation.y +=
+      delta * currentSpeed.current;
+  });
+
+  return (
+    <group ref={groupRef}>
+      {repositories.map((repo, index) => (
+        <RepositoryNode
+          key={repo.id}
+          repo={repo}
+          index={index}
+          selected={selectedRepo?.id === repo.id}
+          onSelect={onSelect}
+        />
+      ))}
+    </group>
+  );
+}
+
+function UniverseScene({
+  repositories,
+  selectedRepo,
+  onSelect,
+  isExploreMode,
+}) {
+  const [isInteracting, setIsInteracting] =
+    useState(false);
+
+  return (
+    <>
+      {/* Universe core */}
+      <UniverseCore />
+
+      {/* Exploration rocket */}
+      {isExploreMode && <ExplorationRocket />}
+
+      {/* Repository orbital field */}
+      <RepositoryField
+        repositories={repositories}
+        selectedRepo={selectedRepo}
+        onSelect={onSelect}
+        isInteracting={isInteracting}
+      />
+
+      <OrbitControls
+        makeDefault
+        enableDamping
+        dampingFactor={0.07}
+        enableRotate
+        enablePan={false}
+        enableZoom
+        rotateSpeed={0.45}
+        zoomSpeed={0.7}
+        minDistance={5}
+        maxDistance={24}
+        minPolarAngle={Math.PI * 0.18}
+        maxPolarAngle={Math.PI * 0.82}
+        touches={{
+          ONE: THREE.TOUCH.ROTATE,
+          TWO: THREE.TOUCH.DOLLY_PAN,
+        }}
+        onStart={() => setIsInteracting(true)}
+        onEnd={() => setIsInteracting(false)}
+      />
+    </>
+  );
+}
 
 function Universe({
   repositories,
   selectedRepo,
   onSelect,
+  isExploreMode,
 }) {
+  const cameraRef = useRef();
+
   return (
     <div className="absolute inset-0">
       <Canvas
@@ -42,6 +138,7 @@ function Universe({
         />
 
         <PerspectiveCamera
+          ref={cameraRef}
           makeDefault
           position={[0, 1.5, 12]}
           fov={48}
@@ -71,54 +168,11 @@ function Universe({
           speed={0.25}
         />
 
-        {/* Central light source */}
-        <Float
-          speed={0.7}
-          rotationIntensity={0.05}
-          floatIntensity={0.12}
-        >
-          <mesh>
-            <sphereGeometry args={[0.45, 24, 24]} />
-
-            <meshStandardMaterial
-              color="#332b68"
-              emissive="#6757ff"
-              emissiveIntensity={1.2}
-              roughness={0.35}
-              metalness={0.45}
-            />
-          </mesh>
-        </Float>
-
-        {repositories.map((repo, index) => (
-          <RepositoryNode
-            key={repo.id}
-            repo={repo}
-            index={index}
-            selected={
-              selectedRepo?.id === repo.id
-            }
-            onSelect={onSelect}
-          />
-        ))}
-
-        <OrbitControls
-          makeDefault
-          enableDamping
-          dampingFactor={0.07}
-          enableRotate
-          enablePan={false}
-          enableZoom
-          rotateSpeed={0.45}
-          zoomSpeed={0.7}
-          minDistance={5}
-          maxDistance={24}
-          minPolarAngle={Math.PI * 0.18}
-          maxPolarAngle={Math.PI * 0.82}
-          touches={{
-            ONE: THREE.TOUCH.ROTATE,
-            TWO: THREE.TOUCH.DOLLY_PAN,
-          }}
+        <UniverseScene
+          repositories={repositories}
+          selectedRepo={selectedRepo}
+          onSelect={onSelect}
+          isExploreMode={isExploreMode}
         />
       </Canvas>
     </div>

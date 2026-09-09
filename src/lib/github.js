@@ -30,8 +30,50 @@ async function githubRequest(endpoint) {
   return response.json();
 }
 
-function normalizeUsername(username) {
-  const cleanUsername = username.trim().replace(/^@/, "");
+export function normalizeUsername(username) {
+  let cleanUsername = username.trim();
+
+  if (!cleanUsername) {
+    throw new Error("Please enter a GitHub username.");
+  }
+
+  cleanUsername = cleanUsername.replace(/^@/, "");
+
+  if (
+    cleanUsername.startsWith("https://") ||
+    cleanUsername.startsWith("http://") ||
+    cleanUsername.startsWith("github.com/")
+  ) {
+    const urlValue =
+      cleanUsername.startsWith("github.com/")
+        ? `https://${cleanUsername}`
+        : cleanUsername;
+
+    let url;
+
+    try {
+      url = new URL(urlValue);
+    } catch {
+      throw new Error("Invalid GitHub profile URL.");
+    }
+
+    if (
+      url.hostname !== "github.com" &&
+      url.hostname !== "www.github.com"
+    ) {
+      throw new Error("Please enter a valid GitHub profile URL.");
+    }
+
+    const pathParts = url.pathname
+      .split("/")
+      .filter(Boolean);
+
+    if (pathParts.length !== 1) {
+      throw new Error("Please enter a valid GitHub profile URL.");
+    }
+
+    cleanUsername = pathParts[0];
+  }
 
   if (!cleanUsername) {
     throw new Error("Please enter a GitHub username.");
