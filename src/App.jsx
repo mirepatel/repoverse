@@ -216,6 +216,9 @@ function App() {
   const [repositoryWorld, setRepositoryWorld] =
     useState(null);
 
+  const [isEnteringRepositoryWorld, setIsEnteringRepositoryWorld] =
+    useState(false);
+
   const [loading, setLoading] =
     useState(false);    
   
@@ -794,6 +797,14 @@ function App() {
 
   return (
     <main className="relative h-[100svh] w-full overflow-hidden bg-[#030305] text-white">
+      <div
+        className={`pointer-events-none absolute inset-0 z-[100] bg-[#030305] transition-opacity duration-450 ${
+          isEnteringRepositoryWorld
+            ? "opacity-100"
+            : "opacity-0"
+        }`}
+        aria-hidden="true"
+      />
       <Universe
         repositories={
           visibleRepositories
@@ -1066,7 +1077,12 @@ function App() {
           setSelectedRepo(null);
         }}
         onExplore={(repo) => {
-          setRepositoryWorld(repo);
+          setIsEnteringRepositoryWorld(true);
+
+          window.setTimeout(() => {
+            setRepositoryWorld(repo);
+            setIsEnteringRepositoryWorld(false);
+          }, 450);
         }}
       />
     </main>

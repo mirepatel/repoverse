@@ -2,7 +2,10 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, PerspectiveCamera, Stars } from "@react-three/drei";
 import * as THREE from "three";
 
-function RepositoryWorldScene() {
+import { getRepositoryVisuals } from "../../lib/repositoryVisuals";
+
+function RepositoryWorldScene({ repo }) {
+  const visuals = getRepositoryVisuals(repo, 0);
   return (
     <>
       <color attach="background" args={["#030305"]} />
@@ -40,9 +43,9 @@ function RepositoryWorldScene() {
       <mesh>
         <sphereGeometry args={[1.35, 48, 48]} />
         <meshStandardMaterial
-          color="#29145f"
-          emissive="#7c3aed"
-          emissiveIntensity={2}
+          color={visuals.color}
+          emissive={visuals.glow}
+          emissiveIntensity={0.7}
           roughness={0.24}
           metalness={0.35}
         />
@@ -52,9 +55,9 @@ function RepositoryWorldScene() {
       <mesh>
         <sphereGeometry args={[1.7, 32, 32]} />
         <meshBasicMaterial
-          color="#8b5cf6"
+          color={visuals.glow}
           transparent
-          opacity={0.055}
+          opacity={0.07}
           depthWrite={false}
           blending={THREE.AdditiveBlending}
         />
@@ -79,6 +82,7 @@ function RepositoryWorldScene() {
 }
 
 function RepositoryWorld({ repo, onBack }) {
+  const visuals = getRepositoryVisuals(repo, 0);
   return (
     <div className="absolute inset-0 bg-[#030305]">
       <Canvas
@@ -91,7 +95,7 @@ function RepositoryWorld({ repo, onBack }) {
           touchAction: "none",
         }}
       >
-        <RepositoryWorldScene />
+        <RepositoryWorldScene repo={repo} />
       </Canvas>
 
       <button
@@ -103,18 +107,31 @@ function RepositoryWorld({ repo, onBack }) {
         Back to universe
       </button>
 
-      <div className="pointer-events-none absolute inset-x-0 top-1/2 z-10 -translate-y-1/2 text-center">
-        <p className="mb-3 text-[9px] font-semibold uppercase tracking-[0.3em] text-violet-300/40">
+      <div className="pointer-events-none absolute inset-x-0 top-8 z-10 text-center sm:top-10">
+        <p className="text-[8px] font-semibold uppercase tracking-[0.3em] text-violet-300/45">
           Repository World
         </p>
 
-        <h1 className="text-3xl font-semibold tracking-tight text-white/90 sm:text-4xl">
+        <h1 className="mt-2 px-6 text-xl font-semibold tracking-tight text-white/75 sm:text-2xl">
           {repo.name}
         </h1>
+      </div>
+      <div className="pointer-events-none absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 items-center gap-4 rounded-full border border-white/[0.06] bg-black/20 px-4 py-2 text-[9px] uppercase tracking-[0.16em] text-white/35 backdrop-blur-md">
+        <span>
+          Activity{" "}
+          <span className="text-white/55">
+            {Math.round(visuals.activity * 100)}%
+          </span>
+        </span>
 
-        <p className="mt-3 text-[10px] uppercase tracking-[0.2em] text-white/20">
-          A world built from this repository
-        </p>
+        <span className="h-2.5 w-px bg-white/10" />
+
+        <span>
+          Popularity{" "}
+          <span className="text-white/55">
+            {visuals.popularity.toFixed(1)}
+          </span>
+        </span>
       </div>
     </div>
   );
