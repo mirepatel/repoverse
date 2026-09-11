@@ -196,7 +196,6 @@ function LandingHero({
               >
                 @{profile}
 
-                <ArrowRight className="ml-1 inline-block h-2.5 w-2.5 -translate-x-0.5 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-60" />
               </button>
             ))}
           </div>
