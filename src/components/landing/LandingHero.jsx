@@ -202,10 +202,52 @@ function LandingHero({
         </div>
       </section>
 
-      {/* Small footer label */}
-      <div className="absolute bottom-5 left-1/2 hidden -translate-x-1/2 text-[9px] font-medium tracking-wide text-white/10 sm:block">
-        Public GitHub profiles · No account required
-      </div>
+      {/* Footer */}
+      <footer className="absolute inset-x-0 bottom-0 z-20 flex items-center justify-between px-5 pb-5 sm:px-7 sm:pb-7 md:px-8 md:pb-8">
+        <p className="text-[9px] font-medium tracking-wide text-white/25 sm:text-[10px]">
+          Repoverse — GitHub in 3D.
+          <span className="text-white/15">
+            {" "}Designed & Built by{" "}
+          </span>
+          <span className="text-white/40">
+            Mire.
+          </span>
+        </p>
+
+        <div className="flex items-center gap-1">
+          <a
+            href="https://github.com/mirepatel"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Mire on GitHub"
+            className="flex h-9 w-9 items-center justify-center rounded-xl text-white/25 transition hover:bg-white/[0.05] hover:text-white/70 active:scale-[0.97]"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              className="h-4 w-4 fill-current"
+            >
+              <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56v-2.17c-3.2.7-3.88-1.54-3.88-1.54-.53-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.75 1.18 1.75 1.18 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.47.11-3.06 0 0 .96-.31 3.15 1.18a10.94 10.94 0 0 1 5.74 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.77.11 3.06.73.81 1.18 1.84 1.18 3.1 0 4.42-2.69 5.4-5.25 5.68.41.36.78 1.08.78 2.18v3.22c0 .31.21.68.8.56A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z" />
+            </svg>
+          </a>
+
+          <a
+            href="https://www.linkedin.com/in/mirepatel"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Mire on LinkedIn"
+            className="flex h-9 w-9 items-center justify-center rounded-xl text-white/25 transition hover:bg-white/[0.05] hover:text-white/70 active:scale-[0.97]"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              className="h-4 w-4 fill-current"
+            >
+              <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V8.99h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.61 0 4.27 2.38 4.27 5.48v6.27ZM5.32 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM3.54 20.45H7.1V8.99H3.54v11.46ZM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0Z" />
+            </svg>
+          </a>
+        </div>
+      </footer>
     </main>
   );
 }
