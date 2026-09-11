@@ -848,7 +848,7 @@ function App() {
           <button
             type="button"
             onClick={handleShare}
-            className="flex h-10 items-center justify-center gap-2 rounded-full border border-white/10 bg-black/30 px-3.5 text-white/55 backdrop-blur-xl transition hover:border-white/20 hover:bg-white/[0.06] hover:text-white active:scale-[0.97]"
+            className="flex h-10 items-center justify-center gap-2 rounded-full border border-white/10 bg-black/30 px-3.5 text-white/55 backdrop-blur-xl transition hover:border-white/20 hover:bg-white/[0.06] hover:text-white active:scale-[0.97] max-sm:w-10 max-sm:gap-0 max-sm:p-1"
             aria-label={
               copied
                 ? "Link copied"
