@@ -143,14 +143,21 @@ function ProfilePopover({
           </div>
 
           {/* Languages */}
-          <div className="mt-4 flex items-center justify-between">
+          <div className="mt-4">
             <span className="text-[9px] font-medium uppercase tracking-[0.18em] text-white/25">
               Languages
             </span>
 
-            <span className="text-[10px] font-medium text-white/50">
-              {languages.size}
-            </span>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {[...languages].map((language) => (
+                <span
+                  key={language}
+                  className="rounded-lg border border-white/8 bg-white/[0.035] px-2 py-1 text-[9px] text-white/45"
+                >
+                  {language}
+                </span>
+              ))}
+            </div>
           </div>
 
           {/* Profile switcher */}
