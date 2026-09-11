@@ -105,7 +105,7 @@ function ProfilePopover({
               type="button"
               onClick={onClose}
               aria-label="Close profile"
-              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-white/25 transition hover:bg-white/[0.06] hover:text-white/60"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-white/25 transition hover:bg-white/[0.06] hover:text-white/60"
             >
               <X className="h-3.5 w-3.5" />
             </button>

@@ -28,10 +28,10 @@ function RepoPanel({ repo, onClose, onExplore }) {
             <button
               type="button"
               onClick={onClose}
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white/30 transition hover:bg-white/10 hover:text-white"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-white/25 transition hover:bg-white/[0.06] hover:text-white/60"
               aria-label="Close repository"
             >
-              <X className="h-4 w-4" />
+              <X className="h-3.5 w-3.5" />
             </button>
           </div>
         </div>
