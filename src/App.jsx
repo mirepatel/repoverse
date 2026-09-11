@@ -758,28 +758,6 @@ function App() {
     );
   }
 
-  const languages =
-    new Set(
-      profile.repositories
-        .map(
-          (repo) => repo.language
-        )
-        .filter(Boolean)
-        .filter(
-          (language) =>
-            language !==
-            "Unknown"
-        )
-    );
-
-  const totalStars =
-    profile.repositories.reduce(
-      (total, repo) =>
-        total +
-        (repo.stars || 0),
-      0
-    );
-
   /*
    * REPOVERSE EXPERIENCE
    */
@@ -1012,35 +990,19 @@ function App() {
 
       {/* Universe information */}
       <div className="pointer-events-none absolute bottom-4 left-4 z-10 sm:bottom-6 sm:left-6 md:left-7">
-        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
-          <span className="text-[8px] font-semibold uppercase tracking-[0.28em] text-white/25 sm:text-[9px] sm:tracking-[0.3em]">
-            {repoQuery
-              ? `${filteredRepositories.length} of `
-              : ""}
-            {profile.repositories.length}{" "}
-            repositories
-          </span>
-
-          <span className="text-[8px] text-white/10">
-            ·
-          </span>
-
-          <span className="text-[8px] font-semibold uppercase tracking-[0.28em] text-white/20 sm:text-[9px]">
-            {languages.size} languages
-          </span>
-
-          <span className="text-[8px] text-white/10">
-            ·
-          </span>
-
-          <span className="text-[8px] font-semibold uppercase tracking-[0.28em] text-white/20 sm:text-[9px]">
-            {totalStars} stars
-          </span>
-        </div>
-
-        <h2 className="mt-1 text-base font-medium tracking-tight text-white/70 sm:text-lg">
+        <h2 className="text-base font-medium tracking-tight text-white/70 sm:text-lg">
           @{profile.user.login}
         </h2>
+
+        <p className="mt-1 text-[8px] font-semibold uppercase tracking-[0.28em] text-white/25 sm:text-[9px] sm:tracking-[0.3em]">
+          {repoQuery
+            ? `${filteredRepositories.length} of `
+            : ""}
+          {profile.repositories.length}{" "}
+          {profile.repositories.length === 1
+            ? "repository"
+            : "repositories"}
+        </p>
       </div>
 
       {/* Explore mode */}
