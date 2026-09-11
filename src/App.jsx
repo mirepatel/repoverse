@@ -923,7 +923,7 @@ function App() {
       </header>
 
       {/* Repository search */}
-      <div className="pointer-events-auto absolute left-1/2 top-20 z-30 w-[min(360px,calc(100vw-32px))] -translate-x-1/2 sm:top-24">
+      <div className="pointer-events-auto absolute left-1/2 top-20 z-30 w-[min(360px,calc(100vw-32px))] -translate-x-1/2 lg:top-7">
         <div className="flex h-10 items-center rounded-xl border border-white/10 bg-[#08080b]/65 p-1 backdrop-blur-2xl transition focus-within:border-white/20 focus-within:bg-[#09090c]/85">
           <Search className="ml-2.5 h-3.5 w-3.5 shrink-0 text-white/25" />
 
